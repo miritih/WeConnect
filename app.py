@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, make_response, session
 from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
 from models import Model
 
 # create a flask app instance
@@ -28,7 +29,20 @@ def register():
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     """login route. users will login to the app via this route"""
-    pass
+    auth = request.get_json()
+    if not auth or not auth['username'] or not auth['password']:
+        return jsonify({"message": "login required!"}), 401
+    if auth['username'] in db.get_all_users():
+        user = db.get_all_users()[auth['username']]
+    else:
+        return jsonify({"message": "Username not found!"}), 401
+    if check_password_hash(user['password'], auth['password']):
+        token = jwt.encode(
+            {'username': user['username']}, app.config['SECRET_KEY'])
+        session['username'] = user['username']
+        session['token'] = token
+        return jsonify({"token": token.decode('UTF-8')}), 200
+    return jsonify({"message": "login required!"}), 401
 
 if __name__ == '__main__':
     app.run(debug=True)

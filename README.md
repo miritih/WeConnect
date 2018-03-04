@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mwenda-eric/WeConnect.svg?branch=master)](https://travis-ci.org/mwenda-eric/WeConnect)
 # WeConnect
 WeConnect provides a platform that brings businesses and individuals together by creating awareness for businesses and giving the users the ability to write reviews about the businesses they have interacted with. 
 
@@ -9,6 +10,10 @@ The following are the included HTML pages
 - Business profile/reviews page
 - Business registration page
 - Business edit page
+
+### Api Endpoints
+- `POST /api/auth/register` Creates a user account
+- `POST /api/auth/login` Logs in a user
 
 ### How to manually run the html paages
 Clone this repo `git clone https://github.com/mwenda-eric/WeConnect.git`

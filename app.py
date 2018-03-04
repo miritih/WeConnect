@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import Model
 
@@ -23,6 +23,12 @@ def register():
     db.add_user(data['username'], hashed_password,
                 data['first_name'], data['last_name'])
     return jsonify({'message': 'User created!'}), 201
+
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """login route. users will login to the app via this route"""
+    pass
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -15,9 +15,7 @@ app.config['SECRET_KEY'] = '73283782qwwerty@987654321'
 
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    """
-    Route to create user, it will receive data through a post method
-    """
+    """Route to create user, it will receive data through a post method"""
     data = request.get_json()  # get data from the api consumer
     hashed_password = generate_password_hash(data['password'], method='sha256')
     if data['username'] in db.get_all_users():  # test if username exists

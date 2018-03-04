@@ -4,7 +4,7 @@ import json
 from app import app, db
 
 
-class ApilistTestCase(unittest.TestCase):
+class CreateUserTestCase(unittest.TestCase):
     """This class represents the api test case"""
 
     def setUp(self):

@@ -31,6 +31,6 @@ class ChangePasswordTestCase(unittest.TestCase):
                                    content_type='application/json')
         data = json.loads(login.data.decode())
         token = data['auth_token']
-        # reset = self.client().post('/api/v1/auth/reset-password', data={"password": "323"},
-        # headers={"content_type": "application/json", "x-access-token":
-        # token})
+        reset = self.client().post('/api/v1/auth/reset-password', data=json.dumps(self.changepass),
+                                   headers={"content-type": "application/json", "x-access-token": token})
+        assert b'{\n  "message": "password updated"\n}\n' in reset.data

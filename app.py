@@ -97,7 +97,6 @@ def logout():
 def reset_password(current_user):
     """Reset password for users"""
     data = request.get_json()
-    print(data)
     hashed_password = generate_password_hash(data['password'], method='sha256')
     usr = user_model.users[current_user["username"]]
     usr.update({"password": hashed_password})

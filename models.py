@@ -7,18 +7,11 @@ class User(object):
 
     def __init__(self):
         self.users = {}
+        self.user_token = {}
 
-    def add_user(self, username, password, first_name, last_name):
+    def add_user(self, username, password, first_name, last_name, admin=False):
         """Creates a new user an append to the list of users"""
         data = {'id': uuid.uuid4(), 'username': username, 'password': password,
-                'first_name': first_name, "last_name": last_name}
+                'first_name': first_name, "last_name": last_name, "admin": admin}
         self.users[username] = data
         return self.users
-
-    def get_all_users(self):
-        """returns a list of all registerd users"""
-        return self.users
-
-    def clear_data(self):
-        """ clear application data"""
-        self.users.clear()

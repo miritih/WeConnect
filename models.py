@@ -2,7 +2,7 @@
 import uuid
 
 
-class Model(object):
+class User(object):
     """The class data models. storea application data in data structures"""
 
     def __init__(self):

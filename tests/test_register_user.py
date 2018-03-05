@@ -1,7 +1,7 @@
 import unittest
 import os
 import json
-from app import app, db
+from app import create_app, user_model
 
 
 class CreateUserTestCase(unittest.TestCase):
@@ -11,23 +11,24 @@ class CreateUserTestCase(unittest.TestCase):
         """
         Will be called before every test
         """
-        app.testing = True
-        self.client = app.test_client
+        self.app = create_app(config_name='testing')
+        self.client = self.app.test_client()
         self.user = {"username": "miriti", "password": "123",
                      "first_name": "eric", "last_name": "Miriti"}
 
     def tearDown(self):
         """ clear data after every test"""
-        db.clear_data()
+        user_model.clear_data()
 
     def test_user_creation(self):
         """
         Test API can create a user (POST request)
         """
-        initial_count = len(db.get_all_users())
-        res = self.client().post('/api/auth/register', data=json.dumps(self.user),
-                                 content_type='application/json')
-        final_count = len(db.get_all_users())
+        initial_count = len(user_model.get_all_users())
+        res = self.client.post('/api/auth/register', data=json.dumps(self.user),
+                               headers={"content-type": 'application/json'})
+        print(res)
+        final_count = len(user_model.get_all_users())
         self.assertEqual(res.status_code, 201)
         self.assertEqual(final_count - initial_count, 1)
 

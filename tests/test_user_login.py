@@ -1,7 +1,7 @@
 import unittest
 import os
 import json
-from app import app, db
+from app import create_app, user_model
 
 
 class LoginUserTestCase(unittest.TestCase):
@@ -9,15 +9,15 @@ class LoginUserTestCase(unittest.TestCase):
 
     def setUp(self):
         """Will be called before every test"""
-        app.testing = True
-        self.client = app.test_client
+        self.app = create_app(config_name='testing')
+        self.client = self.app.test_client
         self.user = {"username": "miriti", "password": "123",
                      "first_name": "eric", "last_name": "Miriti"}
         self.logins = {"username": "miriti", "password": "123"}
 
     def tearDown(self):
         """ clear data after every test"""
-        db.clear_data()
+        user_model.clear_data()
 
     def test_user_can_login(self):
         """Test user can login to get access token"""

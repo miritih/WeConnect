@@ -134,6 +134,8 @@ def register_business(current_user):
 @token_required
 def update_business(current_user, businessId):
     """ Get business id and update business"""
+    business_model.businesses[businessId]
+
     data = request.get_json()
     update = {
         'id': uuid.uuid4(),
@@ -143,7 +145,7 @@ def update_business(current_user, businessId):
         "bio": data['bio'],
         'user_id': current_user['username']
     }
-    business_model.businesses[businessId] = update
+    biz = update
     return jsonify({"message": "business updated!"})
 
 
@@ -153,7 +155,7 @@ def get_busineses():
     return jsonify(business_model.businesses)
 
 
-config_name = os.getenv('APP_SETTINGS')
+config_name = os.getenv('APP_SETTINGS') or 'development'
 app = create_app(config_name)
 if __name__ == '__main__':
     app.run()

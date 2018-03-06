@@ -45,7 +45,7 @@ class CreateUserTestCase(unittest.TestCase):
             data=json.dumps(self.logins),
             content_type='application/json'
         )
-        self.data = json.loads(self.login.data.decode('UTF-8'))
+        self.data = json.loads(self.login.get_data(as_text=True))
         # get the token to be used by tests
         self.token = self.data['auth_token']
 

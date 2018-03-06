@@ -14,6 +14,9 @@ class LoginUserTestCase(unittest.TestCase):
         self.user = {"username": "miriti", "password": "123",
                      "first_name": "eric", "last_name": "Miriti"}
         self.logins = {"username": "miriti", "password": "123"}
+        # Create_user
+        self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
+                           headers={"content-type": "application/json"})
 
     def tearDown(self):
         """ clear data after every test"""
@@ -21,8 +24,6 @@ class LoginUserTestCase(unittest.TestCase):
 
     def test_user_can_login(self):
         """Test user can login to get access token"""
-        register = self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
-                                      headers={"content-type": "application/json"})
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    headers={"content-type": "application/json"})
         self.assertEqual(login.status_code, 200)

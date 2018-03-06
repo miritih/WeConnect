@@ -5,6 +5,8 @@ omit =
     */flask*
     */jinja2*
     */jwt*
+    *markupsafe*
+    *itsdangerous.py *
     */werkzeug*
     */ctypes/*
     */html/*

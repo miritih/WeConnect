@@ -27,8 +27,8 @@ class LogoutUserTestCase(unittest.TestCase):
                                       content_type='application/json')
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    content_type='application/json')
-        data = json.loads(login.data.decode('UTF-8'))
+        data = json.loads(login.get_data(as_text=True))
         token = data['auth_token']
         logout = self.client().post('/api/v1/auth/logout', data={},
                                     headers={"content_type": "application/json", "x-access-token": token})
-        self.assertEqual(logout.status_code, 200)
+        self.assertEqual(login.status_code, 200)

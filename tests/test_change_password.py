@@ -29,7 +29,7 @@ class ChangePasswordTestCase(unittest.TestCase):
 
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    content_type='application/json')
-        data = json.loads(login.data.decode("utf-8"))
+        data = json.loads(login.data.decode('UTF-8'))
         token = data['auth_token']
         reset = self.client().post('/api/v1/auth/reset-password', data=json.dumps(self.changepass),
                                    headers={"content-type": "application/json", "x-access-token": token})

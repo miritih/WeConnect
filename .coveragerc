@@ -1,6 +1,11 @@
 [report]
 omit =
     */venv/*
+    */click*
+    */flask*
+    */jinja2*
+    */jwt*
+    */werkzeug*
     */ctypes/*
     */html/*
     */http/*

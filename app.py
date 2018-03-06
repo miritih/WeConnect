@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import jwt
 import os
-from models import User
+from models import User, Business
 from instance.config import app_config
 
 # create a flask app instance
@@ -22,6 +22,7 @@ def create_app(config_name):
 # instance of model taht will store app data
 # application will use data structures to srore data
 user_model = User()
+business_model = Business()
 
 
 def token_required(f):
@@ -105,6 +106,9 @@ def reset_password(current_user):
 
 @bp.route('/api/v1/businesses', methods=['POST'])
 def register_business():
+    """endpoint to create a new business"""
+    data = rquest.get_json()
+
     return ''
 
 

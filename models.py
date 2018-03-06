@@ -15,3 +15,14 @@ class User(object):
                 'first_name': first_name, "last_name": last_name, "admin": admin}
         self.users[username] = data
         return self.users
+
+
+class Business(object):
+    """Business model. store all business data"""
+
+    def __init__(self):
+        self.businesses = {}
+
+    def add_businesses(self, name, location, category, bio):
+        """Adds a new business to businesses dictionary"""
+        pass

@@ -107,9 +107,16 @@ def reset_password(current_user):
 @bp.route('/api/v1/businesses', methods=['POST'])
 def register_business():
     """endpoint to create a new business"""
-    data = rquest.get_json()
+    data = request.get_json()
+    if not data or not data['name']:
+        return jsonify({"message": "Name must be available!"}), 402
 
-    return ''
+    if data['name'] in business_model.businesses:
+        return jsonify({"message": "Sorry!! Name taken!"}), 402
+    # add business
+    business_model.add_businesses(data['name'], data['location'],
+                                  data['category'], data['bio'])
+    return jsonify({"message": "Business created"}), 201
 
 
 config_name = os.getenv('APP_SETTINGS')

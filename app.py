@@ -65,10 +65,11 @@ def login():
     auth = request.get_json()
     if not auth or not auth['username'] or not auth['password']:
         return jsonify({"message": "login required!"}), 401
-    if auth['username'] in user_model.users:
-        user = user_model.users[auth['username']]
-    else:
+    if auth['username'] not in user_model.users.keys():
+        print(auth['username'] in user_model.users.keys())
+        print(user_model.users.keys())
         return jsonify({"message": "Username not found!"}), 401
+    user = user_model.users[auth['username']]
     if check_password_hash(user['password'], auth['password']):
         token = jwt.encode(
             {'username': user['username']}, os.getenv("SECRET_KEY"))
@@ -105,7 +106,8 @@ def reset_password(current_user):
 
 
 @bp.route('/api/v1/businesses', methods=['POST'])
-def register_business():
+@token_required
+def register_business(current_user):
     """endpoint to create a new business"""
     data = request.get_json()
     if not data or not data['name']:
@@ -114,8 +116,9 @@ def register_business():
     if data['name'] in business_model.businesses:
         return jsonify({"message": "Sorry!! Name taken!"}), 402
     # add business
+    user_id = current_user['username']
     business_model.add_businesses(data['name'], data['location'],
-                                  data['category'], data['bio'])
+                                  data['category'], data['bio'], user_id)
     return jsonify({"message": "Business created"}), 201
 
 

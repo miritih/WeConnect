@@ -23,10 +23,10 @@ class Business(object):
     def __init__(self):
         self.businesses = {}
 
-    def add_businesses(self, name, location, category, bio):
+    def add_businesses(self, name, location, category, bio, user_id):
         """Adds a new business to businesses dictionary"""
         new_business = {'id': uuid.uuid4(), 'name': name, 'location': location,
-                        'category': category, "bio": bio}
+                        'category': category, "bio": bio, 'user_id': user_id}
         self.businesses[name] = new_business
         return self.businesses
 

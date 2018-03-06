@@ -37,7 +37,7 @@ class CreateUserTestCase(unittest.TestCase):
         business_model.businesses.clear()
 
     def test_business_can_create_successfully(self):
-        """Tests that a business can be crated successfully"""
+        """Tests that a business can be created successfully"""
         initial_count = len(business_model.businesses)
         res = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
                                  headers={"content-type": "application/json", "x-access-token": self.token})
@@ -51,7 +51,6 @@ class CreateUserTestCase(unittest.TestCase):
                                  headers={"content-type": "application/json", "x-access-token": self.token})
         res2 = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
                                   headers={"content-type": "application/json", "x-access-token": self.token})
-
         assert b'{\n  "message": "Sorry!! Name taken!"\n}\n' in res2.data
 
     def test_cannot_create_with_empty_data(self):

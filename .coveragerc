@@ -1,0 +1,17 @@
+[report]
+omit =
+    */venv/*
+    */ctypes/*
+    */html/*
+    */http/*
+    */encodings/*
+    */numbers.py
+    */mimetypes.py 
+    */uuid.py 
+    */hmac.py 
+    */stringprep.py
+    */decimal.py
+
+
+
+

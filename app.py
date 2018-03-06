@@ -2,6 +2,8 @@ from flask import Flask, Blueprint, jsonify, request, make_response, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import jwt
+import uuid
+import datetime
 import os
 from models import User, Business
 from instance.config import app_config
@@ -19,7 +21,7 @@ def create_app(config_name):
     return app
 
 
-# instance of model taht will store app data
+# instance of model that will store app data
 # application will use data structures to srore data
 user_model = User()
 business_model = Business()
@@ -54,8 +56,11 @@ def register():
     hashed_password = generate_password_hash(data['password'], method='sha256')
     if data['username'] in user_model.users:  # test if username exists
         return jsonify({"message": "Sorry!! Username taken!"})
-    data = user_model.add_user(data['username'], hashed_password,
-                               data['first_name'], data['last_name'])
+    data = user_model.add_user(data['username'],
+                               hashed_password,
+                               data['first_name'],
+                               data['last_name']
+                               )
     return jsonify({"message": "user created!"}), 201
 
 
@@ -71,8 +76,11 @@ def login():
         return jsonify({"message": "Username not found!"}), 401
     user = user_model.users[auth['username']]
     if check_password_hash(user['password'], auth['password']):
-        token = jwt.encode(
-            {'username': user['username']}, os.getenv("SECRET_KEY"))
+        token = jwt.encode({
+            'username': user['username'],
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000)},
+            os.getenv("SECRET_KEY")
+        )
         user_model.user_token[user['username']] = token
         return jsonify({"auth_token": token.decode('UTF-8')}), 200
     return jsonify({"message": "login required!"}), 401
@@ -120,6 +128,29 @@ def register_business(current_user):
     business_model.add_businesses(data['name'], data['location'],
                                   data['category'], data['bio'], user_id)
     return jsonify({"message": "Business created"}), 201
+
+
+@bp.route('/api/v1/businesses/<businessId>', methods=['POST'])
+@token_required
+def update_business(current_user, businessId):
+    """ Get business id and update business"""
+    data = request.get_json()
+    update = {
+        'id': uuid.uuid4(),
+        'name': data['name'],
+        'location': data['location'],
+        'category': data['category'],
+        "bio": data['bio'],
+        'user_id': current_user['username']
+    }
+    business_model.businesses[businessId] = update
+    return jsonify({"message": "business updated!"})
+
+
+@bp.route('/api/v1/businesses', methods=['GET'])
+def get_busineses():
+    """Returns all registered businesses"""
+    return jsonify(business_model.businesses)
 
 
 config_name = os.getenv('APP_SETTINGS')

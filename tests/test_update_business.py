@@ -45,7 +45,7 @@ class CreateUserTestCase(unittest.TestCase):
             data=json.dumps(self.logins),
             content_type='application/json'
         )
-        self.data = json.loads(self.login.data.decode())
+        self.data = json.loads(self.login.data.decode("utf-8"))
         # get the token to be used by tests
         self.token = self.data['auth_token']
 
@@ -69,5 +69,4 @@ class CreateUserTestCase(unittest.TestCase):
 
     def test_can_only_update_own_business(self):
         """ Tests that user cannot update other users businesses"""
-
         pass

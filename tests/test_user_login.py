@@ -25,8 +25,6 @@ class LoginUserTestCase(unittest.TestCase):
                                       content_type='application/json')
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    content_type='application/json')
-        data = json.loads(login.data.decode())
-        print(data)
         self.assertEqual(login.status_code, 200)
 
     def test_cannot_login_if_not_registered(self):

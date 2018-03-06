@@ -103,6 +103,11 @@ def reset_password(current_user):
     return jsonify({"message": "password updated"})
 
 
+@bp.route('/api/v1/businesses', methods=['POST'])
+def register_business():
+    return ''
+
+
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':

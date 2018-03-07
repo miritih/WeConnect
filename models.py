@@ -36,3 +36,21 @@ class Business(object):
         }
         self.businesses[id] = new_business
         return self.businesses
+
+
+class Reviews(object):
+    """Reviews model class will store all revies data for businesses"""
+
+    def __init__(self):
+        self.reviews = {}
+
+    def add_review(self, body, user_id, business_id):
+        """ Creates a new review for businesses"""
+        id = str(uuid.uuid4())
+        new_review = {
+            'id': id,
+            'body': body,
+            'user_id': user_id,
+            'business_id': business_id
+        }
+        self.reviews[id] = new_review

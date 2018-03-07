@@ -176,6 +176,20 @@ def get_business(current_user, business_id):
     return jsonify({"message": "Business not found"})
 
 
+@bp.route('/api/v1/businesses/<businessId>/reviews', methods=['POST'])
+@token_required
+def create_review(current_user, businessId):
+    """ Add revies to a business. only logged in users"""
+    data = request.get_json()
+    if not data or not data['review']:
+        return jsonify({"message": "No review in your data"}), 401
+    if businessId not in business_model.businesses:
+        return jsonify({"message": "Business not found"}), 401
+    user_id = current_user['username']
+    review_model.add_review(data['review'], user_id, businessId)
+    return jsonify({"message": "Your Review was added"}), 201
+
+
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':

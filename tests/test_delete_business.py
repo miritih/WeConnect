@@ -56,13 +56,13 @@ class DeleteBusinessTestCase(unittest.TestCase):
     def test_can_delete_successfully(self):
         """Tests that a business can be Deleted successfully"""
         res = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
-                                 headers={"content-type": "application/json", "x-access-token": self.token})
+                                 headers={"content-type": "application/json", "access-token": self.token})
         res2 = self.client().delete('/api/v1/businesses/1',
-                                    headers={"content-type": "application/json", "x-access-token": self.token})
+                                    headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 201)
 
     def test_cannot_delete_empty(self):
         """Tests that cannot delete a business that doesn't exist"""
         res2 = self.client().delete('/api/v1/businesses/1',
-                                    headers={"content-type": "application/json", "x-access-token": self.token})
+                                    headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 401)

@@ -36,7 +36,7 @@ class AddBusinessTestCase(unittest.TestCase):
 
         # register business for reviews
         self.client().post('/api/v1/businesses', data=json.dumps(self.business),
-                           headers={"content-type": "application/json", "x-access-token": self.token})
+                           headers={"content-type": "application/json", "access-token": self.token})
 
     def tearDown(self):
         """ clear data after every test"""
@@ -45,10 +45,10 @@ class AddBusinessTestCase(unittest.TestCase):
     def test_can_get_business_reviews(self):
         """Test can get all business reviews successfully"""
         self.client().post('api/v1/businesses/1/reviews', data=json.dumps(self.review),
-                           headers={"content-type": "application/json", "x-access-token": self.token})
+                           headers={"content-type": "application/json", "access-token": self.token})
         self.client().post('api/v1/businesses/1/reviews', data=json.dumps(self.review),
-                           headers={"content-type": "application/json", "x-access-token": self.token})
+                           headers={"content-type": "application/json", "access-token": self.token})
         res = self.client().get('api/v1/businesses/1/reviews',
-                                headers={"content-type": "application/json", "x-access-token": self.token})
+                                headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res.status_code, 200)
         self.assertEqual(len(review_model.reviews), 2)

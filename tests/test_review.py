@@ -36,7 +36,7 @@ class AddBusinessTestCase(unittest.TestCase):
 
         # register business for reviews
         self.client().post('/api/v1/businesses', data=json.dumps(self.business),
-                           headers={"content-type": "application/json", "x-access-token": self.token})
+                           headers={"content-type": "application/json", "access-token": self.token})
 
     def tearDown(self):
         """ clear data after every test"""
@@ -45,12 +45,12 @@ class AddBusinessTestCase(unittest.TestCase):
     def test_can_add_review(self):
         """Test can add review successfully"""
         res = self.client().post('api/v1/businesses/1/reviews', data=json.dumps(self.review),
-                                 headers={"content-type": "application/json", "x-access-token": self.token})
+                                 headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res.status_code, 201)
 
     def test_review_for_non_existing_business(self):
         """Test cannot post review for a non existing business"""
         res = self.client().post('api/v1/businesses/43/reviews', data=json.dumps(self.review),
-                                 headers={"content-type": "application/json", "x-access-token": self.token})
+                                 headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res.status_code, 401)
         assert b'{\n  "message": "Business not found"\n}\n' in res.data

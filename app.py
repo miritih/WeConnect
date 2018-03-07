@@ -27,12 +27,12 @@ business_model = Business()
 review_model = Reviews()
 
 
-def token_required(f):
+def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+        if 'access-token' in request.headers:
+            token = request.headers['access-token']
 
         if not token:
             return jsonify({'message': 'Token is missing, login to get token'}), 401
@@ -90,7 +90,7 @@ def login():
 def logout():
     """method to logout user"""
     token = None
-    if 'x-access-token' in request.headers:
+    if 'access-token' in request.headers:
         try:
             data = jwt.decode(token, os.getenv("SECRET_KEY"))
             if data['username'] in user_model.user_token:
@@ -103,7 +103,7 @@ def logout():
 
 
 @bp.route('/api/v1/auth/reset-password', methods=['POST'])
-@token_required
+@login_required
 def reset_password(current_user):
     """Reset password for users"""
     data = request.get_json()
@@ -114,7 +114,7 @@ def reset_password(current_user):
 
 
 @bp.route('/api/v1/businesses', methods=['POST'])
-@token_required
+@login_required
 def register_business(current_user):
     """endpoint to create a new business"""
     data = request.get_json()
@@ -131,7 +131,7 @@ def register_business(current_user):
 
 
 @bp.route('/api/v1/businesses/<businessId>', methods=['PUT'])
-@token_required
+@login_required
 def update_business(current_user, businessId):
     """ Get business id and update business"""
     if businessId in business_model.businesses:
@@ -150,14 +150,14 @@ def update_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])
-@token_required
+@login_required
 def get_busineses(current_user):
     """Returns all registered businesses"""
     return jsonify(business_model.businesses)
 
 
 @bp.route('/api/v1/businesses/<businessId>', methods=['DELETE'])
-@token_required
+@login_required
 def delete_business(current_user, businessId):
     """ deletes a business"""
     if businessId in business_model.businesses:
@@ -167,7 +167,7 @@ def delete_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses/<business_id>', methods=['GET'])
-@token_required
+@login_required
 def get_business(current_user, business_id):
     """ returns a single business"""
     if business_id in business_model.businesses:
@@ -177,7 +177,7 @@ def get_business(current_user, business_id):
 
 
 @bp.route('/api/v1/businesses/<businessId>/reviews', methods=['POST'])
-@token_required
+@login_required
 def create_review(current_user, businessId):
     """ Add revies to a business. only logged in users"""
     data = request.get_json()
@@ -191,7 +191,7 @@ def create_review(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])
-@token_required
+@login_required
 def get_business_reviews(current_user, businessId):
     """Gets all reviews for a business"""
     if businessId not in business_model.businesses:

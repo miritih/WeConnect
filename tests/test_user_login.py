@@ -34,7 +34,13 @@ class LoginUserTestCase(unittest.TestCase):
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    headers={"content-type": "application/json"})
         self.assertEqual(login.status_code, 401)
-        # assert b'{\n  "message": "Username not found!"\n}\n' in login.data
+
+    def test_login_details_required(self):
+        """Test that all login fields are required"""
+        login = self.client().post('/api/v1/auth/login', data=json.dumps({"username": "", "password": ""}),
+                                   headers={"content-type": "application/json"})
+        self.assertEqual(login.status_code, 401)
+        # assert b'{\n  "message": "login required!\n}\n' in login.data
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,7 +21,16 @@ class Business(object):
     """Business model. store all business data"""
 
     def __init__(self):
-        self.businesses = {}
+        self.businesses = {
+            "1": {
+                "bio": "Epic",
+                "category": "Tech",
+                "id": "1",
+                "location": "Nairobi,Kenya",
+                "name": "Andela",
+                "user_id": "mwenda-eric"
+            }
+        }
 
     def add_businesses(self, name, location, category, bio, user_id):
         """Adds a new business to businesses dictionary"""

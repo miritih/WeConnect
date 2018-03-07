@@ -32,3 +32,10 @@ class LogoutUserTestCase(unittest.TestCase):
         logout = self.client().post('/api/v1/auth/logout', data={},
                                     headers={"content_type": "application/json", "access-token": token})
         self.assertEqual(login.status_code, 200)
+
+    def test_user_needs_token_to_logout(self):
+        """test that you must be logged for you to logout"""
+        res = self.client().post('/api/v1/auth/logout', data={},
+                                 headers={"content_type": "application/json"})
+        self.assertEqual(res.status_code, 401)
+        assert b'{\n  "message": "Token is missing, login to get token"\n}\n' in res.data

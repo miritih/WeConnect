@@ -66,3 +66,10 @@ class DeleteBusinessTestCase(unittest.TestCase):
         res2 = self.client().delete('/api/v1/businesses/1',
                                     headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 401)
+
+    def can_only_delete_own_business(self):
+        """test that one can only delete a business they created """
+        res2 = self.client().delete('/api/v1/businesses/1',
+                                    headers={"content-type": "application/json", "access-token": self.token})
+        self.assertEqual(res2.status_code, 401)
+        assert b'{\n  "message": "Sorry! You can only delete your business!!"\n}\n' in res2.data

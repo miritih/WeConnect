@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, request, make_response, session
+from flask import Flask, Blueprint, jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import jwt
@@ -202,7 +202,6 @@ def get_business_reviews(current_user, businessId):
             all_reviews.append(review)
     return jsonify(all_reviews)
     # for review in review_model.reviews:
-
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':

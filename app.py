@@ -118,23 +118,23 @@ def register_business(current_user):
     """endpoint to create a new business"""
     data = request.get_json()
     if not data or not data['name']:
-        return jsonify({"message": "Name must be available!"}), 402
-
-    if data['name'] in business_model.businesses:
-        return jsonify({"message": "Sorry!! Name taken!"}), 402
-    # add business
+        return jsonify({"message": "Name must be available!"}), 401
+    for busines in business_model.businesses.values():
+        if data['name'] == busines['name']:
+            return jsonify({"message": "Sorry!! Name taken!"}), 401
+    # update business
     user_id = current_user['username']
     business_model.add_businesses(data['name'], data['location'],
                                   data['category'], data['bio'], user_id)
     return jsonify({"message": "Business created"}), 201
 
 
-@bp.route('/api/v1/businesses/<businessId>', methods=['POST'])
+@bp.route('/api/v1/businesses/<businessId>', methods=['PUT'])
 @token_required
 def update_business(current_user, businessId):
     """ Get business id and update business"""
-    business_model.businesses[businessId]
-
+    if businessId in business_model.businesses:
+        biz = business_model.businesses[businessId]
     data = request.get_json()
     update = {
         'id': uuid.uuid4(),
@@ -149,12 +149,31 @@ def update_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])
-def get_busineses():
+@token_required
+def get_busineses(current_user):
     """Returns all registered businesses"""
     return jsonify(business_model.businesses)
 
 
-config_name = os.getenv('APP_SETTINGS') or 'development'
+@bp.route('/api/v1/businesses/<businessId>', methods=['DELETE'])
+@token_required
+def delete_business(current_user, businessId):
+    """ deletes a business"""
+    if businessId in business_model.businesses:
+        del business_model.businesses[businessId]
+        return jsonify({"message": "Business Deleted"}), 201
+    return jsonify({"message": "Business not found"}), 401
+
+
+@bp.route('/api/v1/businesses/<business_id>', methods=['GET'])
+def get_business(business_id):
+    """ returns a single business"""
+    if business_id in business_model.businesses:
+        data = business_model.businesses[business_id]
+        return jsonify(data)
+    return jsonify({"message": "Business not found"})
+
+config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':
     app.run()

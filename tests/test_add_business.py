@@ -4,7 +4,7 @@ import json
 from app import create_app, business_model
 
 
-class CreateUserTestCase(unittest.TestCase):
+class AddBusinessTestCase(unittest.TestCase):
     """This class represents the api test case"""
 
     def setUp(self):
@@ -28,7 +28,7 @@ class CreateUserTestCase(unittest.TestCase):
 
         self.login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                         content_type='application/json')
-        self.data = json.loads(self.login.get_data(as_text=True))
+        self.data = json.loads(self.login.data.decode("utf-8"))
         # get the token to be used by tests
         self.token = self.data['auth_token']
 
@@ -51,6 +51,7 @@ class CreateUserTestCase(unittest.TestCase):
                                  headers={"content-type": "application/json", "x-access-token": self.token})
         res2 = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
                                   headers={"content-type": "application/json", "x-access-token": self.token})
+        self.assertEqual(res2.status_code, 401)
         assert b'{\n  "message": "Sorry!! Name taken!"\n}\n' in res2.data
 
     def test_cannot_create_with_empty_data(self):

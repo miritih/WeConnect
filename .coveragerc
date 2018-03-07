@@ -1,12 +1,13 @@
 [report]
 omit =
     */venv/*
+    *virtualenv/*
     */click*
     */flask*
     */jinja2*
     */jwt*
     *markupsafe*
-    *itsdangerous.py *
+    *itsdangerous.py*
     */werkzeug*
     */ctypes/*
     */html/*

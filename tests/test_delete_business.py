@@ -4,7 +4,7 @@ import json
 from app import create_app, business_model
 
 
-class CreateUserTestCase(unittest.TestCase):
+class DeleteBusinessTestCase(unittest.TestCase):
     """This class represents the api test case"""
 
     def setUp(self):
@@ -53,21 +53,16 @@ class CreateUserTestCase(unittest.TestCase):
         """ clear data after every test"""
         business_model.businesses.clear()
 
-    def test_business_can_updated_successfully(self):
-        """Tests that a business can be updated successfully"""
+    def test_can_delete_successfully(self):
+        """Tests that a business can be Deleted successfully"""
         res = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
                                  headers={"content-type": "application/json", "x-access-token": self.token})
-        res2 = self.client().put('/api/v1/businesses/1', data=json.dumps(self.update_business),
-                                 headers={"content-type": "application/json", "x-access-token": self.token})
-        self.assertEqual(res2.status_code, 200)
+        res2 = self.client().delete('/api/v1/businesses/1',
+                                    headers={"content-type": "application/json", "x-access-token": self.token})
+        self.assertEqual(res2.status_code, 201)
 
-    def can_can_get_businesses(self):
-        """test can get all busineses"""
-        res = self.client().get('/api/v1/businesses',
-                                headers={"x-access-token": self.token})
-        self.assertEqual(res.status_code, 200)
-
-    def test_can_only_update_own_business(self):
-        """ Tests that user cannot update other users businesses"""
-
-        pass
+    def test_cannot_delete_empty(self):
+        """Tests that cannot delete a business that doesn't exist"""
+        res2 = self.client().delete('/api/v1/businesses/1',
+                                    headers={"content-type": "application/json", "x-access-token": self.token})
+        self.assertEqual(res2.status_code, 401)

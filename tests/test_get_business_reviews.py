@@ -40,9 +40,10 @@ class AddBusinessTestCase(unittest.TestCase):
 
     def tearDown(self):
         """ clear data after every test"""
-        business_model.businesses.clear()
+        review_model.reviews.clear()
 
     def test_can_get_business_reviews(self):
+        review_model.reviews.clear()
         """Test can get all business reviews successfully"""
         self.client().post('api/v1/businesses/1/reviews', data=json.dumps(self.review),
                            headers={"content-type": "application/json", "access-token": self.token})

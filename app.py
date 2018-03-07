@@ -87,7 +87,8 @@ def login():
 
 
 @bp.route('/api/v1/auth/logout', methods=['POST'])
-def logout():
+@login_required
+def logout(current_user):
     """method to logout user"""
     token = None
     if 'access-token' in request.headers:

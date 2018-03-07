@@ -5,7 +5,7 @@ import jwt
 import uuid
 import datetime
 import os
-from models import User, Business
+from models import User, Business, Reviews
 from instance.config import app_config
 
 # create a flask app instance
@@ -24,6 +24,7 @@ def create_app(config_name):
 # application will use data structures to srore data
 user_model = User()
 business_model = Business()
+review_model = Reviews()
 
 
 def token_required(f):
@@ -166,12 +167,14 @@ def delete_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses/<business_id>', methods=['GET'])
-def get_business(business_id):
+@token_required
+def get_business(current_user, business_id):
     """ returns a single business"""
     if business_id in business_model.businesses:
         data = business_model.businesses[business_id]
         return jsonify(data)
     return jsonify({"message": "Business not found"})
+
 
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)

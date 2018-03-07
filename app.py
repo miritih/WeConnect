@@ -190,6 +190,19 @@ def create_review(current_user, businessId):
     return jsonify({"message": "Your Review was added"}), 201
 
 
+@bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])
+@token_required
+def get_business_reviews(current_user, businessId):
+    """Gets all reviews for a business"""
+    if businessId not in business_model.businesses:
+        return jsonify({"message": "Business not found"})
+    all_reviews = []
+    for review in review_model.reviews.values():
+        if review['business_id'] == businessId:
+            all_reviews.append(review)
+    return jsonify(all_reviews)
+    # for review in review_model.reviews:
+
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':

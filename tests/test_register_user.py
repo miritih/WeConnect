@@ -41,5 +41,18 @@ class CreateUserTestCase(unittest.TestCase):
                                   content_type='application/json')
         assert b'{\n  "message": "Sorry!! Username taken!"\n}\n' in res2.data
 
+    def test_detsils_missing(self):
+        """test username and password required"""
+        res = self.client().post('/api/v1/auth/register', data=json.dumps({"username": " ", "password": " ",
+                                                                           "first_name": "eric", "last_name": "Miriti"}),
+                                 headers={"content-type": 'application/json'})
+        assert b'{\n  "message": "username or password missing"\n}\n' in res.data
+
+    def test_bad_request(self):
+        """test returns bad request if all fields not available"""
+        res = self.client().post('/api/v1/auth/register', data=json.dumps({"username": " ", "last_name": "Miriti"}),
+                                 headers={"content-type": 'application/json'})
+        assert b'{\n  "message": "username or password missing"\n}\n' in res.data
+
 if __name__ == "__main__":
     unittest.main()

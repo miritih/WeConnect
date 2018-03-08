@@ -46,7 +46,7 @@ class LoginUserTestCase(unittest.TestCase):
         login = self.client().post('/api/v1/auth/login', data=json.dumps({"password": "11313"}),
                                    headers={"content-type": "application/json"})
         self.assertEqual(login.status_code, 400)
-        assert b'{\n  "error": "Error!, check you are sending correct information"\n}\n' in login.data
+        assert b'{\n  "Error": "Error!, check you are sending correct information"\n}\n' in login.data
 
 
 if __name__ == "__main__":

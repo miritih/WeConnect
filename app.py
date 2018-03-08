@@ -98,25 +98,21 @@ def login():
             return jsonify({"auth_token": token.decode('UTF-8')}), 200
         return jsonify({"message": "Wrong password!"}), 401
     except Exception as e:
-        return jsonify({"error": "Error!, check you are sending correct information"}), 400
+        return jsonify({"Error": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/auth/logout', methods=['POST'])
 @login_required
 def logout(current_user):
     """method to logout user"""
-    token = None
-    if 'access-token' in request.headers:
-        try:
-            token = request.headers['access-token']
-            data = jwt.decode(token, os.getenv("SECRET_KEY"))
-            if data['username'] in user_model.user_token.keys():
-                del user_model.user_token[data['username']]
-                return jsonify({"message": "Logged out!"}), 200
-        except:
-            return jsonify({'message': 'Invalid token!'})
-
-    return jsonify({'message': 'Token not passed'}), 401
+    try:
+        token = request.headers['access-token']
+        data = jwt.decode(token, os.getenv("SECRET_KEY"))
+        if data['username'] in user_model.user_token.keys():
+            del user_model.user_token[data['username']]
+            return jsonify({"message": "Logged out!"}), 200
+    except:
+        return jsonify({'message': 'Invalid token!'})
 
 
 @bp.route('/api/v1/auth/reset-password', methods=['PUT'])
@@ -126,14 +122,14 @@ def reset_password(current_user):
     try:
         data = request.get_json()
         if not data['password'].strip():
-            return jsonify("Password is required")
+            return jsonify({"message": "Password is required"})
         hashed_password = generate_password_hash(
             data['password'].strip(), method='sha256')
         usr = user_model.users[current_user["username"]]
         usr.update({"password": hashed_password})
         return jsonify({"message": "password updated"})
     except Exception as e:
-        return jsonify({"message": "Error!, check you are sending correct information"})
+        return jsonify({"Error": "Error!, check you are sending correct information"})
 
 
 @bp.route('/api/v1/businesses', methods=['POST'])
@@ -153,7 +149,7 @@ def register_business(current_user):
                                                data['category'], data['bio'], user_id)
         return jsonify({"message": "Business created", 'business': create}), 201
     except Exception as e:
-        return jsonify({"message": "Error!, check you are sending correct information"}), 400
+        return jsonify({"Error": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/businesses/<businessId>', methods=['PUT'])
@@ -176,7 +172,7 @@ def update_business(current_user, businessId):
             return jsonify({"message": "business updated!"}), 202
         return jsonify({"message": "Sorry! You can only update your business!!"}), 401
     except Exception as e:
-        return jsonify({"message": "Error!, check you are sending correct information"})
+        return jsonify({"Error": "Error!, check you are sending correct information"})
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])
@@ -223,7 +219,7 @@ def create_review(current_user, businessId):
         review_model.add_review(data['review'], user_id, businessId)
         return jsonify({"message": "Your Review was added"}), 201
     except Exception as e:
-        return jsonify({"message": "Error!, check you are sending correct information"}), 400
+        return jsonify({"Error": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])

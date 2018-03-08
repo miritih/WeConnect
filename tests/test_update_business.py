@@ -51,10 +51,10 @@ class CreateUserTestCase(unittest.TestCase):
 
     def tearDown(self):
         """ clear data after every test"""
-        business_model.businesses.clear()
 
     def test_business_can_updated_successfully(self):
         """Tests that a business can be updated successfully"""
+        business_model.businesses.clear()
         res = self.client().post('/api/v1/businesses', data=json.dumps(self.business),
                                  headers={"content-type": "application/json",
                                           "access-token": self.token})
@@ -62,24 +62,23 @@ class CreateUserTestCase(unittest.TestCase):
                                  headers={"content-type": "application/json",
                                           "access-token": self.token})
 
-        self.assertEqual(res2.status_code, 200)
+        self.assertEqual(res2.status_code, 202)
 
     def can_can_get_businesses(self):
         """test can get all busineses"""
+        business_model.businesses.clear()
+        self.client().post('/api/v1/businesses', data=json.dumps(self.business),
+                           headers={"content-type": "application/json",
+                                    "access-token": self.token})
         res = self.client().get('/api/v1/businesses',
                                 headers={"access-token": self.token})
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(business_model.busineses), 1)
 
     def test_bussiness_exists(self):
         """tests cannot get a buiness that does not exist"""
-        res = self.client().get('/api/v1/businesses/1',
+        business_model.businesses.clear()
+        res = self.client().get('/api/v1/businesses/4',
                                 headers={"access-token": self.token})
         self.assertEqual(res.status_code, 401)
         assert b'{\n  "message": "Business not found"\n}\n' in res.data
-
-    def test_can_only_update_own_business(self):
-        """ Tests that user cannot update other users businesses"""
-        res2 = self.client().put('/api/v1/businesses/1', data=json.dumps(self.business),
-                                 headers={"content-type": "application/json",
-                                          "access-token": self.token})
-        self.assertEqual(res2.status_code, 401)

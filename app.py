@@ -164,20 +164,19 @@ def update_business(current_user, businessId):
         if businessId in business_model.businesses:
             biz = business_model.businesses[businessId]
         data = request.get_json()
-        update = {
-            'id': uuid.uuid4(),
-            'name': data['name'],
-            'location': data['location'],
-            'category': data['category'],
-            "bio": data['bio'],
-            'user_id': current_user['username']
-        }
         if biz['user_id'] == current_user['username']:
-            biz = update
-            return jsonify({"message": "business updated!"})
+            biz['location'] = data['location'].strip() if data[
+                'location'].strip() else biz['location']
+            biz['category'] = data['category'].strip() if data[
+                'category'].strip() else biz['category']
+            biz['name'] = data['name'].strip() if data[
+                'name'].strip() else biz['name']
+            biz['bio'] = data['bio'].strip() if data[
+                'bio'].strip() else biz['bio']
+            return jsonify({"message": "business updated!"}), 202
         return jsonify({"message": "Sorry! You can only update your business!!"}), 401
     except Exception as e:
-        return jsonify({"message": "Error!, check you are sending correct information"}), 400
+        return jsonify({"message": "Error!, check you are sending correct information"})
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])

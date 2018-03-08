@@ -17,21 +17,23 @@ class LogoutUserTestCase(unittest.TestCase):
                      "first_name": "eric", "last_name": "Miriti"}
         self.logins = {"username": "miriti", "password": "123"}
 
+        self.register = self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
+                                           content_type='application/json')
+        self.login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
+                                        content_type='application/json')
+        self.data = json.loads(self.login.get_data(as_text=True))
+        self.token = self.data['auth_token']
+
     def tearDown(self):
         """ clear data after every test"""
         user_model.users.clear()
 
     def test_user_can_logout(self):
         """Tests users can logout"""
-        register = self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
-                                      content_type='application/json')
-        login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
-                                   content_type='application/json')
-        data = json.loads(login.get_data(as_text=True))
-        token = data['auth_token']
+
         logout = self.client().post('/api/v1/auth/logout', data={},
-                                    headers={"content_type": "application/json", "access-token": token})
-        self.assertEqual(login.status_code, 200)
+                                    headers={"content_type": "application/json", "access-token": self.token})
+        self.assertEqual(logout.status_code, 200)
 
     def test_user_needs_token_to_logout(self):
         """test that you must be logged for you to logout"""

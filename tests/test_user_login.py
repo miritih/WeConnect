@@ -29,18 +29,25 @@ class LoginUserTestCase(unittest.TestCase):
         self.assertEqual(login.status_code, 200)
 
     def test_cannot_login_if_not_registered(self):
-        user_model.users.clear()  # clears users
         """ Test that only registered users can login"""
+        user_model.users.clear()  # clears users
         login = self.client().post('/api/v1/auth/login', data=json.dumps(self.logins),
                                    headers={"content-type": "application/json"})
         self.assertEqual(login.status_code, 401)
 
     def test_login_details_required(self):
         """Test that all login fields are required"""
-        login = self.client().post('/api/v1/auth/login', data=json.dumps({"username": "", "password": ""}),
+        login = self.client().post('/api/v1/auth/login', data=json.dumps({"username": "", "password": "11313"}),
                                    headers={"content-type": "application/json"})
         self.assertEqual(login.status_code, 401)
-        # assert b'{\n  "message": "login required!\n}\n' in login.data
+
+    def test_bad_request_with_wrong_filds(self):
+        """tests app will only accept required parameters"""
+        login = self.client().post('/api/v1/auth/login', data=json.dumps({"password": "11313"}),
+                                   headers={"content-type": "application/json"})
+        self.assertEqual(login.status_code, 400)
+        assert b'{\n  "error": "Error!, check you are sending correct information"\n}\n' in login.data
+
 
 if __name__ == "__main__":
     unittest.main()

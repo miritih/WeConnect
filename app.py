@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, jsonify, request, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import jwt
+import re
 import uuid
 import datetime
 import os
@@ -53,18 +54,28 @@ def register():
     """Route to create user, it will receive data through a post method"""
     try:
         data = request.get_json()  # get data from the api consumer
+        if not data or not data['username'].strip() or not data["password"].strip():
+            return jsonify({'message': "username or password missing"})
         hashed_password = generate_password_hash(
-            data['password'], method='sha256')
-        if data['username'] in user_model.users:  # test if username exists
+            data['password'].strip(), method='sha256')
+        if data['username'].strip() in user_model.users:  # test if username exists
             return jsonify({"message": "Sorry!! Username taken!"})
-        data = user_model.add_user(data['username'],
+        user = user_model.add_user(data['username'].strip(),
                                    hashed_password,
                                    data['first_name'],
                                    data['last_name']
                                    )
-        return jsonify({"message": "user created!"}), 201
+        return jsonify({
+            "message": "user created!",
+            "Details": {
+                "id": user['id'],
+                "username": user['username'],
+                "first_name": user['first_name'],
+                "last_name": user['last_name']
+            }
+        }), 201
     except Exception as e:
-        return jsonify({"Error": "Error occured, use correct data format"})
+        return jsonify({"Error": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/auth/login', methods=['POST'])
@@ -72,11 +83,11 @@ def login():
     """login route. users will login to the app via this route"""
     try:
         auth = request.get_json()
-        if not auth or not auth['username'] or not auth['password']:
+        if not auth or not auth['username'].strip() or not auth['password'].strip():
             return jsonify({"message": "login required!"}), 401
-        if auth['username'] not in user_model.users.keys():
+        if auth['username'].strip() not in user_model.users.keys():
             return jsonify({"message": "Username not found!"}), 401
-        user = user_model.users[auth['username']]
+        user = user_model.users[auth['username'].strip()]
         if check_password_hash(user['password'], auth['password']):
             token = jwt.encode({
                 'username': user['username'],
@@ -85,9 +96,9 @@ def login():
             )
             user_model.user_token[user['username']] = token.decode('UTF-8')
             return jsonify({"auth_token": token.decode('UTF-8')}), 200
-        return jsonify({"message": "wrong login details!"}), 401
+        return jsonify({"message": "Wrong password!"}), 401
     except Exception as e:
-        return jsonify({"error": "Error occured, use correct data format"})
+        return jsonify({"error": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/auth/logout', methods=['POST'])
@@ -97,14 +108,13 @@ def logout(current_user):
     token = None
     if 'access-token' in request.headers:
         try:
-
             token = request.headers['access-token']
             data = jwt.decode(token, os.getenv("SECRET_KEY"))
             if data['username'] in user_model.user_token.keys():
                 del user_model.user_token[data['username']]
                 return jsonify({"message": "Logged out!"}), 200
         except:
-            return jsonify({'message': 'Token is invalid or Expired!'})
+            return jsonify({'message': 'Invalid token!'})
 
     return jsonify({'message': 'Token not passed'}), 401
 
@@ -115,30 +125,35 @@ def reset_password(current_user):
     """Reset password for users"""
     try:
         data = request.get_json()
+        if not data['password'].strip():
+            return jsonify("Password is required")
         hashed_password = generate_password_hash(
-            data['password'], method='sha256')
+            data['password'].strip(), method='sha256')
         usr = user_model.users[current_user["username"]]
         usr.update({"password": hashed_password})
         return jsonify({"message": "password updated"})
     except Exception as e:
-        return jsonify({"message": "error! Check you are sending correct data"})
+        return jsonify({"message": "Error!, check you are sending correct information"})
 
 
 @bp.route('/api/v1/businesses', methods=['POST'])
 @login_required
 def register_business(current_user):
     """endpoint to create a new business"""
-    data = request.get_json()
-    if not data or not data['name']:
-        return jsonify({"message": "Name must be available!"}), 401
-    for busines in business_model.businesses.values():
-        if data['name'] == busines['name']:
-            return jsonify({"message": "Sorry!! Name taken!"}), 401
-    # update business
-    user_id = current_user['username']
-    business_model.add_businesses(data['name'], data['location'],
-                                  data['category'], data['bio'], user_id)
-    return jsonify({"message": "Business created"}), 201
+    try:
+        data = request.get_json()
+        if not data or not data['name'].strip():
+            return jsonify({"message": "Name cannot be empty!"}), 401
+        for busines in business_model.businesses.values():
+            if data['name'].strip() == busines['name']:
+                return jsonify({"message": "Sorry!! Name taken!"}), 401
+        # update business
+        user_id = current_user['username']
+        create = business_model.add_businesses(data['name'].strip(), data['location'],
+                                               data['category'], data['bio'], user_id)
+        return jsonify({"message": "Business created", 'business': create}), 201
+    except Exception as e:
+        return jsonify({"message": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/businesses/<businessId>', methods=['PUT'])
@@ -162,7 +177,7 @@ def update_business(current_user, businessId):
             return jsonify({"message": "business updated!"})
         return jsonify({"message": "Sorry! You can only update your business!!"}), 401
     except Exception as e:
-        return jsonify({"message": "error! Check you are sending correct data"}), 401
+        return jsonify({"message": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])
@@ -199,14 +214,17 @@ def get_business(current_user, business_id):
 @login_required
 def create_review(current_user, businessId):
     """ Add revies to a business. only logged in users"""
-    data = request.get_json()
-    if not data or not data['review']:
-        return jsonify({"message": "No review in your data"}), 401
-    if businessId not in business_model.businesses:
-        return jsonify({"message": "Business not found"}), 401
-    user_id = current_user['username']
-    review_model.add_review(data['review'], user_id, businessId)
-    return jsonify({"message": "Your Review was added"}), 201
+    try:
+        data = request.get_json()
+        if not data or not data['review']:
+            return jsonify({"message": "No review in your data"}), 401
+        if businessId not in business_model.businesses:
+            return jsonify({"message": "Business not found"}), 401
+        user_id = current_user['username']
+        review_model.add_review(data['review'], user_id, businessId)
+        return jsonify({"message": "Your Review was added"}), 201
+    except Exception as e:
+        return jsonify({"message": "Error!, check you are sending correct information"}), 400
 
 
 @bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])

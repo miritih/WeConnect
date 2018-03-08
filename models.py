@@ -14,7 +14,7 @@ class User(object):
         data = {'id': uuid.uuid4(), 'username': username, 'password': password,
                 'first_name': first_name, "last_name": last_name, "admin": admin}
         self.users[username] = data
-        return self.users
+        return self.users[username]
 
 
 class Business(object):
@@ -44,7 +44,7 @@ class Business(object):
             'user_id': user_id
         }
         self.businesses[id] = new_business
-        return self.businesses
+        return self.businesses[id]
 
 
 class Reviews(object):

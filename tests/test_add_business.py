@@ -58,4 +58,4 @@ class AddBusinessTestCase(unittest.TestCase):
         """Tests that business name location and category must be provided to create an new business"""
         res = self.client().post('/api/v1/businesses', data=json.dumps(self.empy_business),
                                  headers={"content-type": "application/json", "access-token": self.token})
-        assert b'{\n  "message": "Name must be available!"\n}\n' in res.data
+        assert b'{\n  "message": "Name cannot be empty!"\n}\n' in res.data

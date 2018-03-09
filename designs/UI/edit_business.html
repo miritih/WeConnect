@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>We Connect - We brings businesses and individuals together</title>
+    <!--boostrap4 cdn link-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!--Font awesome cdn link-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!--custom css-->
+    <link rel="stylesheet" href="assets/app.css">
+    <link rel="shortcut icon" type="image/x-icon" href="#" />
+  </head>
+  <body>
+      <!--Top navigation-->
+      <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: #e3f2fd;">
+        <a class="navbar-brand" href="#">WeConnect</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topnav" aria-controls="topnav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="topnav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="register.html">Create Account</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="login.html">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="register_business.html">Register business</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="business_profile.html">Business profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="edit_business.html">Edit Business</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+        <!--EOF Top navigation-->
+        
+    <!--Welcome area jumbotron -->
+      <div class="jumbotron">
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xm-12">
+            <div class="card">
+              <div class="card-body">
+                <form class="form-inline">
+                  
+                    <label for="bsname" class="sr-only">Business Name</label>
+                    <input type="text" class="form-control ml-auto" placeholder="Search by name" name="bsname"/>
+                 
+                 
+                    <label for="location" class="sr-only">Location</label>
+                    <input type="text" class="form-control ml-auto" placeholder="Search by Location" name="location"/>
+                
+                 
+                    <label for="category" class="sr-only">Category</label>
+                    <input type="text" class="form-control ml-auto" placeholder="Search by Catogory" name="category"/>
+            
+                 
+                    <button type="submit" class="btn btn-success ml-auto">Search</button>
+                  
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--EOF Welcome area jumbotron -->
+    <!--wrapper-->
+    <div class="container">
+      <!--business-->
+      <section class="bsprofile">
+        <div class="card  w-75">
+            <div class="card-header">
+                <h5>Edit business</h5>
+            </div>
+          <div class="card-body">
+            <form>
+                <label for="bsname" >Business name</label>
+                <input type="text" required class="form-control" name="bsname"/>
+                <label for="bscategory">Category</label>
+                <input type="text" required class="form-control" name="bscategory"/>
+                <label for="bslocation">Business location</label>
+                <input type="text" required class="form-control" name="bslocation"/>
+                <label for="intro">Description</label>
+                <textarea class="form-control" name="intro"></textarea>
+                <br>
+                <button type="submit" class="btn btn-success">Register</button>
+            </form>
+          </div>
+        </div>
+      </section>
+      <!--EOF business-->
+    </div>
+  <!--EOF wrapper-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

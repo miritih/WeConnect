@@ -1,0 +1,47 @@
+/*We connect App css */
+.body a{
+  color: #fff;
+}
+/*======================*/
+/*Business listings page*/
+/*======================*/
+.wrapper{
+  background-color: #fff;
+  margin-top: 15%;
+}
+
+.jumbotron-home{
+  background-image: url('banner.png');
+  background-position: center;
+  background-size: cover;
+  border-radius: 0px;
+  height: 400px;
+}
+.navhome .navbar-nav .nav-link{
+  color: #fff;
+}
+.white{
+  color: #fff;
+}
+
+.bsprofile{
+ margin-top: -90px;
+ margin-left: 12%;
+}
+.review-img{
+  float: left;
+  margin-right: 20px;
+}
+.reviews{
+  
+}
+.navbar-light{
+    
+}
+.profile-img{
+    
+}
+
+.bg-transparent{
+  background-color: transparent;
+}

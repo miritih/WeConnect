@@ -123,11 +123,13 @@ def reset_password(current_user):
         data = request.get_json()
         if not data['password'].strip():
             return jsonify({"message": "Password is required"})
-        hashed_password = generate_password_hash(
-            data['password'].strip(), method='sha256')
-        usr = user_model.users[current_user["username"]]
-        usr.update({"password": hashed_password})
-        return jsonify({"message": "password updated"})
+        if check_password_hash(current_user['password'], data['old_password']):
+            hashed_password = generate_password_hash(
+                data['password'].strip(), method='sha256')
+            usr = user_model.users[current_user["username"]]
+            usr.update({"password": hashed_password})
+            return jsonify({"message": "password updated"})
+        return jsonify({"message":"Wrong old Password"})
     except Exception as e:
         return jsonify({"Error": "Error!, check you are sending correct information"})
 
@@ -145,8 +147,8 @@ def register_business(current_user):
                 return jsonify({"message": "Sorry!! Name taken!"}), 401
         # update business
         user_id = current_user['username']
-        create = business_model.add_businesses(data['name'].strip(), data['location'],
-                                               data['category'], data['bio'], user_id)
+        create = business_model.add_businesses(data['name'].strip(), 
+                    data['location'], data['category'], data['bio'], user_id)
         return jsonify({"message": "Business created", 'business': create}), 201
     except Exception as e:
         return jsonify({"Error": "Error!, check you are sending correct information"}), 400
@@ -176,8 +178,7 @@ def update_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses', methods=['GET'])
-@login_required
-def get_busineses(current_user):
+def get_busineses():
     """Returns all registered businesses"""
     return jsonify(business_model.businesses)
 
@@ -223,8 +224,7 @@ def create_review(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])
-@login_required
-def get_business_reviews(current_user, businessId):
+def get_business_reviews(businessId):
     """Gets all reviews for a business"""
     if businessId not in business_model.businesses:
         return jsonify({"message": "Business not found"})
@@ -238,4 +238,4 @@ def get_business_reviews(current_user, businessId):
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0',port=8080)

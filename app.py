@@ -56,10 +56,15 @@ def register():
         data = request.get_json()  # get data from the api consumer
         if not data or not data['username'].strip() or not data["password"].strip():
             return jsonify({'message': "username or password missing"})
-        hashed_password = generate_password_hash(
-            data['password'].strip(), method='sha256')
+        if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password'].strip()):
+            return jsonify({
+                "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
+            })
         if data['username'].strip() in user_model.users:  # test if username exists
             return jsonify({"message": "Sorry!! Username taken!"})
+            
+        hashed_password = generate_password_hash(data['password'].strip(), 
+                                method='sha256')
         user = user_model.add_user(data['username'].strip(),
                                    hashed_password,
                                    data['first_name'],
@@ -123,6 +128,10 @@ def reset_password(current_user):
         data = request.get_json()
         if not data['password'].strip():
             return jsonify({"message": "Password is required"})
+        if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password'].strip()):
+            return jsonify({
+                "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
+            })
         if check_password_hash(current_user['password'], data['old_password']):
             hashed_password = generate_password_hash(
                 data['password'].strip(), method='sha256')
@@ -197,8 +206,7 @@ def delete_business(current_user, businessId):
 
 
 @bp.route('/api/v1/businesses/<business_id>', methods=['GET'])
-@login_required
-def get_business(current_user, business_id):
+def get_business(business_id):
     """ returns a single business"""
     if business_id in business_model.businesses:
         data = business_model.businesses[business_id]

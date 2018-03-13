@@ -15,24 +15,18 @@ class DeleteBusinessTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.user = {
             "username": "miriti",
-            "password": "123",
+            "password": "qwerty123!@#",
             "first_name": "eric",
             "last_name": "Miriti"
         }
 
-        self.logins = {"username": "miriti", "password": "123"}
+        self.logins = {"username": "miriti", "password": "qwerty123!@#"}
 
         self.business = {
             "name": "Andela",
             "location": "Nairobi,Kenya",
             "category": "Tech",
             "bio": "Epic"
-        }
-        self.update_business = {
-            "name": "",
-            "location": "",
-            "category": "",
-            "bio": ""
         }
         self.client().post(
             '/api/v1/auth/register',

@@ -13,10 +13,10 @@ class ChangePasswordTestCase(unittest.TestCase):
         """
         self.app = create_app(config_name='testing')
         self.client = self.app.test_client
-        self.user = {"username": "miriti", "password": "123",
+        self.user = {"username": "miriti", "password": "qwerty123!@#",
                      "first_name": "eric", "last_name": "Miriti"}
-        self.logins = {"username": "miriti", "password": "123"}
-        self.changepass = {'password': '1234'}
+        self.logins = {"username": "miriti", "password": "qwerty123!@#"}
+        self.changepass = {'password': 'qwerty123!@#%',"old_password":"qwerty123!@#"}
         self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
                            content_type='application/json')
 

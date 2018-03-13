@@ -15,12 +15,12 @@ class CreateUserTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.user = {
             "username": "miriti",
-            "password": "123",
+            "password": "qwerty123!@#",
             "first_name": "eric",
             "last_name": "Miriti"
         }
 
-        self.logins = {"username": "miriti", "password": "123"}
+        self.logins = {"username": "miriti", "password": "qwerty123!@#"}
 
         self.business = {
             "name": "Andela",

@@ -14,10 +14,10 @@ class AddBusinessTestCase(unittest.TestCase):
         self.app = create_app(config_name='testing')
         self.client = self.app.test_client
 
-        self.user = {"username": "miriti", "password": "123",
+        self.user = {"username": "miriti", "password": "qwerty123!@#",
                      "first_name": "eric", "last_name": "Miriti"}
 
-        self.logins = {"username": "miriti", "password": "123"}
+        self.logins = {"username": "miriti", "password": "qwerty123!@#"}
 
         self.business = {"name": "Safaricom", "location": "Nairobi,Kenya",
                          "category": "Telecommunication", "bio": "Epic"}

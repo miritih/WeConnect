@@ -54,12 +54,14 @@ class DeleteBusinessTestCase(unittest.TestCase):
         res2 = self.client().delete('/api/v1/businesses/1',
                                     headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 201)
+        self.assertIn("Business Deleted",str(res2.data))
 
     def test_cannot_delete_empty(self):
         """Tests that cannot delete a business that doesn't exist"""
         res2 = self.client().delete('/api/v1/businesses/1',
                                     headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 401)
+        self.assertIn("Business not found",str(res2.data))
 
     def can_only_delete_own_business(self):
         """test that one can only delete a business they created """
@@ -67,3 +69,13 @@ class DeleteBusinessTestCase(unittest.TestCase):
                                     headers={"content-type": "application/json", "access-token": self.token})
         self.assertEqual(res2.status_code, 401)
         assert b'{\n  "message": "Sorry! You can only delete your business!!"\n}\n' in res2.data
+    
+    def test_can_only_delete_own_business(self):
+        """Tests that users cannot delete other users businesses"""
+        business_model.add_businesses("name",
+                    "location", "category", "bio", "kenneth")
+        res2 = self.client().delete('/api/v1/businesses/1',
+                                 headers={"content-type": "application/json",
+                                          "access-token": self.token})
+        self.assertEqual(res2.status_code, 401)
+        self.assertIn("Sorry! You can only delete your business",str(res2.data))

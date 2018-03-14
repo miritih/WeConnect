@@ -61,7 +61,7 @@ def register():
         if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password']):
             return jsonify({
                 "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
-            })
+            }),406
         if data['username'].strip() in user_model.users:  # test if username exists
             return jsonify({"message": "Sorry!! Username taken!"})
             
@@ -137,18 +137,18 @@ def reset_password(current_user):
         if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password']):
             return jsonify({
                 "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
-            })
+            }),406
         if check_password_hash(current_user['password'], data['old_password']):
             hashed_password = generate_password_hash(
                 data['password'].strip(), method='sha256')
             usr = user_model.users[current_user["username"]]
             usr.update({"password": hashed_password})
             return jsonify({"message": "password updated"})
-        return jsonify({"message":"Wrong old Password"})
+        return jsonify({"message":"Wrong old Password"}),406
     except Exception as e:
         return jsonify({
             "Error": "Error!, check you are sending correct information"
-        })
+        }),400
 
 
 @bp.route('/api/v1/businesses', methods=['POST'])
@@ -274,10 +274,12 @@ def get_business_reviews(businessId):
     for review in review_model.reviews.values():
         if review['business_id'] == businessId:
             all_reviews.append(review)
+    if not all_reviews:
+        return jsonify({"message":"No Reviews for this business"})
     return jsonify(all_reviews)
     # for review in review_model.reviews:
 
 config_name = os.getenv('APP_SETTINGS')
 app = create_app(config_name)
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8080)
+    app.run()

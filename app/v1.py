@@ -6,19 +6,11 @@ import re
 import uuid
 import datetime
 import os
-from models import User, Business, Reviews
-from instance.config import app_config
+from .models.v1 import User, Business, Reviews
 
-# create a flask app instance
+# create a version 1 blueprint
+version1 = Blueprint('v1', __name__)
 
-bp = Blueprint('app', __name__)
-
-
-def create_app(config_name):
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_pyfile('config.py')
-    app.register_blueprint(bp)
-    return app
 
 
 # instance of model that will store app data
@@ -50,8 +42,7 @@ def login_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
-
-@bp.route('/api/v1/auth/register', methods=['POST'])
+@version1.route('auth/register', methods=['POST'])
 def register():
     """Route to create user, it will receive data through a post method"""
     try:
@@ -87,7 +78,7 @@ def register():
         }), 400
 
 
-@bp.route('/api/v1/auth/login', methods=['POST'])
+@version1.route('auth/login', methods=['POST'])
 def login():
     """login route. users will login to the app via this route"""
     try:
@@ -108,11 +99,10 @@ def login():
         return jsonify({"message": "Wrong password!"}), 401
     except Exception as e:
         return jsonify({
-            "Error": "Error!, check you are sending correct information"
-        }), 400
+            "Error": "Error!, check you are sending correct information"}), 400
 
 
-@bp.route('/api/v1/auth/logout', methods=['POST'])
+@version1.route('auth/logout', methods=['POST'])
 @login_required
 def logout(current_user):
     """method to logout user"""
@@ -126,7 +116,7 @@ def logout(current_user):
         return jsonify({'message': 'Invalid token!'})
 
 
-@bp.route('/api/v1/auth/reset-password', methods=['PUT'])
+@version1.route('auth/reset-password', methods=['PUT'])
 @login_required
 def reset_password(current_user):
     """Reset password for users"""
@@ -151,7 +141,7 @@ def reset_password(current_user):
         }),400
 
 
-@bp.route('/api/v1/businesses', methods=['POST'])
+@version1.route('businesses', methods=['POST'])
 @login_required
 def register_business(current_user):
     """endpoint to create a new business"""
@@ -175,7 +165,7 @@ def register_business(current_user):
         }), 400
 
 
-@bp.route('/api/v1/businesses/<businessId>', methods=['PUT'])
+@version1.route('businesses/<businessId>', methods=['PUT'])
 @login_required
 def update_business(current_user, businessId):
     """ Get business id and update business"""
@@ -206,13 +196,13 @@ def update_business(current_user, businessId):
         })
 
 
-@bp.route('/api/v1/businesses', methods=['GET'])
+@version1.route('businesses', methods=['GET'])
 def get_busineses():
     """Returns all registered businesses"""
     return jsonify(business_model.businesses)
 
 
-@bp.route('/api/v1/businesses/<businessId>', methods=['DELETE'])
+@version1.route('businesses/<businessId>', methods=['DELETE'])
 @login_required
 def delete_business(current_user, businessId):
     """ deletes a business"""
@@ -230,7 +220,7 @@ def delete_business(current_user, businessId):
     return jsonify({"message": "Business not found"}), 401
 
 
-@bp.route('/api/v1/businesses/<business_id>', methods=['GET'])
+@version1.route('businesses/<business_id>', methods=['GET'])
 def get_business(business_id):
     """ returns a single business"""
     if business_id in business_model.businesses:
@@ -239,7 +229,7 @@ def get_business(business_id):
     return jsonify({"message": "Business not found"}), 401
 
 
-@bp.route('/api/v1/businesses/<businessId>/reviews', methods=['POST'])
+@version1.route('businesses/<businessId>/reviews', methods=['POST'])
 @login_required
 def create_review(current_user, businessId):
     """ Add revies to a business. only logged in users"""
@@ -263,7 +253,7 @@ def create_review(current_user, businessId):
             "Error": "Error!, check you are sending correct information"
         }), 400
 
-@bp.route('/api/v1/businesses/<businessId>/reviews', methods=['GET'])
+@version1.route('businesses/<businessId>/reviews', methods=['GET'])
 def get_business_reviews(businessId):
     """Gets all reviews for a business"""
     if businessId not in business_model.businesses:
@@ -279,7 +269,4 @@ def get_business_reviews(businessId):
     return jsonify(all_reviews)
     # for review in review_model.reviews:
 
-config_name = os.getenv('APP_SETTINGS')
-app = create_app(config_name)
-if __name__ == '__main__':
-    app.run()
+

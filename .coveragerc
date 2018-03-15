@@ -1,25 +1,2 @@
 [report]
-omit =
-    */venv/*
-    *virtualenv/*
-    */click*
-    */flask*
-    */jinja2*
-    */jwt*
-    *markupsafe*
-    *itsdangerous.py*
-    */werkzeug*
-    */ctypes/*
-    */html/*
-    */http/*
-    */encodings/*
-    */numbers.py
-    */mimetypes.py 
-    */uuid.py 
-    */hmac.py 
-    */stringprep.py
-    */decimal.py
-
-
-
-
+show_missing = True

@@ -4,8 +4,7 @@ import os
 class Config(object):
     """docstring for Config"""
     DEBUG = False
-    SECRET = os.getenv('SECRET_KEY')
-
+    TESTING = False
 
 class Development(Config):
     """docstring for Development"""
@@ -21,7 +20,6 @@ class Testing(Config):
 class Production(Config):
     """"""
     DEBUG = False
-    TESTING = False
 
 app_config = {
     'development': Development,

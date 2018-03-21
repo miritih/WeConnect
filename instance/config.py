@@ -4,6 +4,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     
 class Development(Config):
     """docstring for Development"""

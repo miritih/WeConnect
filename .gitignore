@@ -3,7 +3,6 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 *$py.class
-.coveragerc
 
 # C extensions
 *.so
@@ -41,6 +40,7 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .coverage
+.coveragerc
 .coverage*
 .cache
 nosetests.xml

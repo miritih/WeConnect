@@ -12,7 +12,6 @@ from .models.v1 import User, Business, Reviews
 version1 = Blueprint('v1', __name__)
 
 
-
 # instance of model that will store app data
 # application will use data structures to srore data
 user_model = User()
@@ -42,6 +41,7 @@ def login_required(f):
         return f(current_user, *args, **kwargs)
     return decorated
 
+
 @version1.route('auth/register', methods=['POST'])
 def register():
     """Route to create user, it will receive data through a post method"""
@@ -51,13 +51,13 @@ def register():
             return jsonify({'message': "username or password missing"})
         if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password']):
             return jsonify({
-                "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
-            }),406
+                "Message": "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
+            }), 406
         if data['username'].strip() in user_model.users:  # test if username exists
             return jsonify({"message": "Sorry!! Username taken!"})
-            
-        hashed_password = generate_password_hash(data['password'], 
-                                method='sha256')
+
+        hashed_password = generate_password_hash(data['password'],
+                                                 method='sha256')
         user = user_model.add_user(data['username'].strip(),
                                    hashed_password,
                                    data['first_name'],
@@ -126,19 +126,19 @@ def reset_password(current_user):
             return jsonify({"message": "Password is required"})
         if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password']):
             return jsonify({
-                "Message":"Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
-            }),406
+                "Message": "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
+            }), 406
         if check_password_hash(current_user['password'], data['old_password']):
             hashed_password = generate_password_hash(
                 data['password'].strip(), method='sha256')
             usr = user_model.users[current_user["username"]]
             usr.update({"password": hashed_password})
             return jsonify({"message": "password updated"})
-        return jsonify({"message":"Wrong old Password"}),406
+        return jsonify({"message": "Wrong old Password"}), 406
     except Exception as e:
         return jsonify({
             "Error": "Error!, check you are sending correct information"
-        }),400
+        }), 400
 
 
 @version1.route('businesses', methods=['POST'])
@@ -154,8 +154,8 @@ def register_business(current_user):
                 return jsonify({"message": "Sorry!! Name taken!"}), 401
         # update business
         user_id = current_user['username']
-        create = business_model.add_businesses(data['name'].strip(), 
-                    data['location'], data['category'], data['bio'], user_id)
+        create = business_model.add_businesses(data['name'].strip(),
+                                               data['location'], data['category'], data['bio'], user_id)
         return jsonify({
             "message": "Business created", 'business': create
         }), 201
@@ -171,7 +171,7 @@ def update_business(current_user, businessId):
     """ Get business id and update business"""
     try:
         if businessId not in business_model.businesses:
-            return jsonify({"message":"Business not found"})
+            return jsonify({"message": "Business not found"})
         biz = business_model.businesses[businessId]
         data = request.get_json()
         if biz['user_id'] == current_user['username']:
@@ -185,7 +185,7 @@ def update_business(current_user, businessId):
                 'bio'].strip() else biz['bio']
             return jsonify({
                 "message": "business updated!",
-                "business":biz
+                "business": biz
             }), 202
         return jsonify({
             "message": "Sorry! You can only update your business!!"
@@ -212,7 +212,7 @@ def delete_business(current_user, businessId):
             del business_model.businesses[businessId]
             return jsonify({
                 "message": "Business Deleted",
-                "Deleted Details":bs
+                "Deleted Details": bs
             }), 201
         return jsonify({
             "message": "Sorry! You can only delete your business!!"
@@ -253,6 +253,7 @@ def create_review(current_user, businessId):
             "Error": "Error!, check you are sending correct information"
         }), 400
 
+
 @version1.route('businesses/<businessId>/reviews', methods=['GET'])
 def get_business_reviews(businessId):
     """Gets all reviews for a business"""
@@ -265,8 +266,6 @@ def get_business_reviews(businessId):
         if review['business_id'] == businessId:
             all_reviews.append(review)
     if not all_reviews:
-        return jsonify({"message":"No Reviews for this business"})
+        return jsonify({"message": "No Reviews for this business"})
     return jsonify(all_reviews)
     # for review in review_model.reviews:
-
-

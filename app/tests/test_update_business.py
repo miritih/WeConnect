@@ -50,7 +50,7 @@ class CreateUserTestCase(unittest.TestCase):
         # get the token to be used by tests
         self.token = self.data['auth_token']
 
-    def tearDown(self): 
+    def tearDown(self):
         """ clear data after every test"""
 
     def test_business_can_updated_successfully(self):
@@ -63,8 +63,7 @@ class CreateUserTestCase(unittest.TestCase):
                                  headers={"content-type": "application/json",
                                           "access-token": self.token})
         self.assertEqual(res2.status_code, 202)
-        self.assertIn("business updated!",str(res2.data))
-
+        self.assertIn("business updated!", str(res2.data))
 
     def can_can_get_businesses(self):
         """test can get all busineses"""
@@ -84,14 +83,14 @@ class CreateUserTestCase(unittest.TestCase):
                                 headers={"access-token": self.token})
         self.assertEqual(res.status_code, 401)
         assert b'{\n  "message": "Business not found"\n}\n' in res.data
-        
-        
+
     def test_can_only_update_own_business(self):
         """Tests that users cannot update other users businesses"""
         business_model.add_businesses("name",
-                    "location", "category", "bio", "kenneth")
+                                      "location", "category", "bio", "kenneth")
         res2 = self.client().put('/api/v1/businesses/1', data=json.dumps(self.update_business),
                                  headers={"content-type": "application/json",
                                           "access-token": self.token})
         self.assertEqual(res2.status_code, 401)
-        self.assertIn("Sorry! You can only update your business",str(res2.data))
+        self.assertIn("Sorry! You can only update your business",
+                      str(res2.data))

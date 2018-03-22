@@ -22,7 +22,8 @@ class AddBusinessTestCase(unittest.TestCase):
 
         self.business = {"name": "Andela", "location": "Nairobi,Kenya",
                          "category": "Tech", "bio": "Epic"}
-        self.review = {"review": "Awesome Awesome Awesome ", "title":"Awesome title"}
+        self.review = {"review": "Awesome Awesome Awesome ",
+                       "title": "Awesome title"}
 
         self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
                            content_type='application/json')

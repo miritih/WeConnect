@@ -20,6 +20,7 @@ class User(TimestampMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
+    email = db.Column(db.String(128))
     password = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
@@ -33,7 +34,6 @@ class User(TimestampMixin, db.Model):
         backref='rvwowner',
         cascade='all, delete-orphan'
         )
-
 
 class Business(TimestampMixin, db.Model):
     """ Creates business table"""

@@ -163,3 +163,70 @@ def register_business(current_user):
             "category": new_biz.category,
         }
     }), 201
+
+
+@version2.route('businesses/<business_id>', methods=['GET'])
+def get_business(business_id):
+    """ returns a single business"""
+    business = Business.query.filter_by(id=business_id).first()
+    if business:
+        return jsonify({
+            'id': business.id,
+            'name': business.name,
+            'location': business.location,
+            'category': business.category,
+            'bio': business.bio,
+            'user_id': business.bsowner.id
+        })
+    return jsonify({"message": "Business not found"}), 401
+
+
+@version2.route('businesses', methods=['GET'])
+def get_busineses():
+    """Returns all registered businesses"""
+    all = Business.query.all()
+    output = []
+    for business in all:
+        business_data = {}
+        business_data['id'] = business.id
+        business_data['name'] = business.name
+        business_data['location'] = business.location
+        business_data['category'] = business.category
+        business_data['bio'] = business.bio
+        business_data['user_id'] = business.bsowner.id
+        output.append(business_data)
+    return jsonify(output)
+
+
+@version2.route('businesses/<businessId>', methods=['PUT'])
+@login_required
+def update_business(current_user, businessId):
+    """ Get business id and update business"""
+
+    biz = Business.query.filter_by(id=businessId).first()
+    if not biz:
+        return jsonify({"message": "Business not found"})
+    data = request.get_json()
+    if data['name'] != biz.name:
+        if Business.query.filter_by(name=data['name']).first():
+            return jsonify({"Error": "Sorry!! Business name taken!"})
+    if biz.bsowner.id == current_user.id:
+        biz.location = data['location'] if data[
+            'location'] else biz.location
+        biz.category = data['category'] if data[
+            'category'] else biz.category
+        biz.name = data['name'] if data['name'] else biz.name
+        biz.bio = data['bio'] if data['bio'] else biz.bio
+        db.session.commit()
+        return jsonify({
+            "message": "business updated!",
+            "Details": {
+                "name": biz.name,
+                "location": biz.location,
+                "category": biz.category,
+            }
+        }), 202
+
+    return jsonify({
+        "message": "Sorry! You can only update your business!!"
+    }), 401

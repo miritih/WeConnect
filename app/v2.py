@@ -1,7 +1,12 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
-from instance.json_schema import reg_user_schema
+import os
+import jwt
+import datetime
+from instance.json_schema import (reg_user_schema,
+                                  login_schema
+                                  )
 from app.models.v2 import User, Business, Review
 from app import create_app, db
 from cerberus import Validator
@@ -46,3 +51,30 @@ def register():
             "last_name": new_user.last_name
         }
     }), 201
+
+
+@version2.route('auth/login', methods=['POST'])
+def login():
+    """login route. users will login to the app via this route"""
+    try:
+        auth = request.get_json()
+        validator = Validator(login_schema)
+        validator.validate(auth)
+        errors = validator.errors
+        if errors:
+            return jsonify(errors), 401
+        username = auth['username'].strip().lower()
+        user = User.query.filter_by(username=username).first()
+        if check_password_hash(user.password, auth['password']):
+            token = jwt.encode({
+                'username': user.username,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000)},
+                os.getenv("SECRET_KEY")
+            )
+            user.logged_in = True
+            db.session.commit()
+            return jsonify({"auth_token": token.decode('UTF-8')}), 200
+        return jsonify({"message": "Wrong password!"}), 401
+    except Exception as e:
+        return jsonify({
+            "Error": "Error!, check you are sending correct information"}), 400

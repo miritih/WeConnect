@@ -1,6 +1,7 @@
 from instance.validations import (validate_username,
                                   validate_email,
-                                  username_taken
+                                  username_taken,
+                                  validate_password
                                   )
 """
 This files stores all validation schema for all POST and PUT json data
@@ -21,7 +22,7 @@ reg_user_schema = {
     },
     'password': {
         'type': 'string',
-        'regex': '\A[0-9a-zA-Z!@#$%&*]{6,20}\Z',
+        'validator': validate_password,
         'required': True,
         'empty': False,
     },
@@ -44,6 +45,19 @@ login_schema = {
         'validator': username_taken
     },
     "password": {
+        'type': 'string',
+        'required': True
+    }
+}
+# reset-password data schema
+
+reset_pass = {
+    "password": {
+        'type': 'string',
+        'validator': validate_password,
+        'required': True
+    },
+    "old_password": {
         'type': 'string',
         'required': True
     }

@@ -6,7 +6,8 @@ import os
 import jwt
 import datetime
 from instance.json_schema import (reg_user_schema,
-                                  login_schema
+                                  login_schema,
+                                  reset_pass
                                   )
 from app.models.v2 import User, Business, Review
 from app import create_app, db
@@ -56,8 +57,6 @@ def register():
     validator.validate(data)
     errors = validator.errors
     if errors:
-        if 'password' in errors.keys():
-            errors['password'] = "Password must be 6 - 20 Characters and can only contains leters, numbers, and any of !@  # $%"
         return jsonify(errors), 401
 
     username = data['username'].strip().lower()
@@ -116,3 +115,22 @@ def logout(current_user):
     current_user.logged_in = False
     db.session.commit()
     return jsonify({"message": "Logged out!"}), 200
+
+
+@version2.route('auth/reset-password', methods=['PUT'])
+@login_required
+def reset_password(current_user):
+    """Reset password for users"""
+    data = request.get_json()
+    validator = Validator(reset_pass)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify(errors), 401
+    if check_password_hash(current_user.password, data['old_password']):
+        hashed_password = generate_password_hash(
+            data['password'].strip(), method='sha256')
+        current_user.password = hashed_password
+        db.session.commit()
+        return jsonify({"message": "password updated"})
+    return jsonify({"message": "Wrong old Password"}), 406

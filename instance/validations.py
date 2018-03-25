@@ -24,8 +24,18 @@ def validate_email(field, value, error):
 
 
 def username_taken(field, value, error):
+    """ validate that duplicate usernames cannot be created"""
     username = value.strip().lower()
     if not username:
         error(field, "Field cannot be empty")
     if not User.query.filter_by(username=username).first():
         error(field, "Sorry!! Username not found!")
+
+
+def validate_password(field, value, error):
+    """validate password is valid and not empty"""
+    if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', value):
+        error(
+            field,
+            "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
+        )

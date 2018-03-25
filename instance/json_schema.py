@@ -1,7 +1,8 @@
 from instance.validations import (validate_username,
                                   validate_email,
                                   username_taken,
-                                  validate_password
+                                  validate_password,
+                                  validate_bsname
                                   )
 """
 This files stores all validation schema for all POST and PUT json data
@@ -60,5 +61,29 @@ reset_pass = {
     "old_password": {
         'type': 'string',
         'required': True
+    }
+}
+
+new_business = {
+    "name": {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+        'validator': validate_bsname
+    },
+    "location": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "category": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "bio": {
+        'type': 'string',
+        'required': True,
+        'empty': False
     }
 }

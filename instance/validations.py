@@ -1,5 +1,5 @@
 import re
-from app.models.v2 import User
+from app.models.v2 import User, Business
 
 """
 All data validation methods will be defined in this file
@@ -39,3 +39,12 @@ def validate_password(field, value, error):
             field,
             "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
         )
+
+
+def validate_bsname(field, value, error):
+    """ Validate that business name cannot be duplicate"""
+    name = value.strip().lower()
+    if not name:
+        error(field, "Business name cannot be empty")
+    if Business.query.filter_by(name=name).first():
+        error(field, "Sorry!! Business name taken!")

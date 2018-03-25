@@ -7,7 +7,8 @@ import jwt
 import datetime
 from instance.json_schema import (reg_user_schema,
                                   login_schema,
-                                  reset_pass
+                                  reset_pass,
+                                  new_business
                                   )
 from app.models.v2 import User, Business, Review
 from app import create_app, db
@@ -57,7 +58,7 @@ def register():
     validator.validate(data)
     errors = validator.errors
     if errors:
-        return jsonify(errors), 401
+        return jsonify({"Errors": errors}), 401
 
     username = data['username'].strip().lower()
     hashed_password = generate_password_hash(data['password'], method='sha256')
@@ -68,8 +69,7 @@ def register():
                     last_name=data['last_name']
                     )
     db.session.add(new_user)
-    a = db.session.commit()
-    print(new_user)
+    db.session.commit()
     return jsonify({
         "Success": "user created!",
         "Details": {
@@ -90,7 +90,7 @@ def login():
         validator.validate(auth)
         errors = validator.errors
         if errors:
-            return jsonify(errors), 401
+            return jsonify({"Errors": errors}), 401
         username = auth['username'].strip().lower()
         user = User.query.filter_by(username=username).first()
         if check_password_hash(user.password, auth['password']):
@@ -126,7 +126,7 @@ def reset_password(current_user):
     validator.validate(data)
     errors = validator.errors
     if errors:
-        return jsonify(errors), 401
+        return jsonify({"Errors": errors}), 401
     if check_password_hash(current_user.password, data['old_password']):
         hashed_password = generate_password_hash(
             data['password'].strip(), method='sha256')
@@ -134,3 +134,32 @@ def reset_password(current_user):
         db.session.commit()
         return jsonify({"message": "password updated"})
     return jsonify({"message": "Wrong old Password"}), 406
+
+
+@version2.route('businesses', methods=['POST'])
+@login_required
+def register_business(current_user):
+    """endpoint to create a new business"""
+    data = request.get_json()
+    validator = Validator(new_business)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    # Create business
+    new_biz = Business(
+        name=data['name'].strip().lower(),
+        location=data['location'],
+        category=data['category'],
+        bio=data['bio'],
+        user_id=current_user.id
+    )
+    db.session.add(new_biz)
+    db.session.commit()
+    return jsonify({
+        "message": "Business created", "Details": {
+            "name": new_biz.name,
+            "location": new_biz.location,
+            "category": new_biz.category,
+        }
+    }), 201

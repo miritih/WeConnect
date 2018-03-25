@@ -23,12 +23,11 @@ def register():
     errors = validator.errors
     if errors:
         if 'password' in errors.keys():
-            errors['password'] = """Password must be 6 - 20 Characters\ 
-            and can only contains leters, numbers, and any of !@  # $%"""
-        return jsonify({"Errors":errors}), 401
+            errors['password'] = "Password must be 6 - 20 Characters and can only contains leters, numbers, and any of !@  # $%"
+        return jsonify(errors), 401
+
     username = data['username'].strip().lower()
-    hashed_password = generate_password_hash(data['password'],
-                                             method='sha256')
+    hashed_password = generate_password_hash(data['password'], method='sha256')
     new_user = User(username=username,
                     email=data['email'],
                     password=hashed_password,
@@ -36,14 +35,14 @@ def register():
                     last_name=data['last_name']
                     )
     db.session.add(new_user)
-    a=db.session.commit()
+    a = db.session.commit()
     print(new_user)
     return jsonify({
         "Success": "user created!",
         "Details": {
-                "email": new_user.email,
-                "username":new_user.username,
-                "first_name": new_user.first_name,
-                "last_name": new_user.last_name
-            }
+            "email": new_user.email,
+            "username": new_user.username,
+            "first_name": new_user.first_name,
+            "last_name": new_user.last_name
+        }
     }), 201

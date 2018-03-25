@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import re
 import os
 import jwt
@@ -17,6 +18,34 @@ version2 = Blueprint('v2', __name__)
 # create application istance and push it to app context
 app = create_app('development')
 app.app_context().push()
+
+
+def login_required(f):
+    """
+    login decorator function
+    it checks the authentication token verify if its valid,
+    then return the aunthenticated user
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'access-token' not in request.headers:
+            return jsonify({
+                'message': 'Token is missing, login to get token'
+            }), 401
+        try:
+            token = request.headers['access-token']
+            data = jwt.decode(token, os.getenv("SECRET_KEY"))
+            current_user = User.query.filter_by(
+                username=data['username'],
+                logged_in=True
+            ).first()
+            if not current_user:
+                return jsonify({"message": "You are not logged in"}), 401
+        except Exception as e:
+            return jsonify({'message': 'Token is invalid or Expired!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 
 @version2.route('auth/register', methods=['POST'])
@@ -78,3 +107,12 @@ def login():
     except Exception as e:
         return jsonify({
             "Error": "Error!, check you are sending correct information"}), 400
+
+
+@version2.route('auth/logout', methods=['POST'])
+@login_required
+def logout(current_user):
+    """method to logout user"""
+    current_user.logged_in = False
+    db.session.commit()
+    return jsonify({"message": "Logged out!"}), 200

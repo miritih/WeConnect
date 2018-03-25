@@ -1,20 +1,22 @@
 from app import db
 
+
 class TimestampMixin(object):
     """
     This will add created_at and 
     updated_at timestamps to every table
     """
     created_at = db.Column(
-        db.DateTime, 
+        db.DateTime,
         server_default=db.func.now()
-        )
+    )
     updated_at = db.Column(
         db.DateTime,
         server_default=db.func.now(),
         server_onupdate=db.func.now()
-        )
-    
+    )
+
+
 class User(TimestampMixin, db.Model):
     """model to create table users for storing user data"""
     __tablename__ = 'users'
@@ -24,16 +26,18 @@ class User(TimestampMixin, db.Model):
     password = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
+    logged_in = db.Column(db.Boolean, default=False)
     businesses = db.relationship(
         'Business',
         backref='bsowner',
         cascade='all, delete-orphan'
-        )
+    )
     reviews = db.relationship(
         'Review',
         backref='rvwowner',
         cascade='all, delete-orphan'
-        )
+    )
+
 
 class Business(TimestampMixin, db.Model):
     """ Creates business table"""
@@ -45,10 +49,10 @@ class Business(TimestampMixin, db.Model):
     bio = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     reviews = db.relationship(
-        'Review', 
-        backref='rvwbusines', 
+        'Review',
+        backref='rvwbusines',
         cascade='all, delete-orphan'
-        )
+    )
 
 
 class Review(TimestampMixin, db.Model):
@@ -58,10 +62,10 @@ class Review(TimestampMixin, db.Model):
     title = db.Column(db.String(255))
     body = db.Column(db.String(255))
     user_id = db.Column(
-        db.Integer, 
+        db.Integer,
         db.ForeignKey('users.id')
-        )
+    )
     business_id = db.Column(
-        db.Integer, 
+        db.Integer,
         db.ForeignKey('businesses.id')
-        )
+    )

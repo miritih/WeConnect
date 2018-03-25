@@ -13,6 +13,7 @@ class CreateUserTestCase(unittest.TestCase):
         Will be called before every test
         """
         self.app = create_app('testing')
+        self.app.app_context().push()
         self.client = self.app.test_client
         self.user = {
             "username": "mwenda",
@@ -90,7 +91,7 @@ class CreateUserTestCase(unittest.TestCase):
             '/api/v2/auth/register',
             data=json.dumps({
                 "username": "mwenda",
-                "eric@gmail.com"
+                "email": "eric@gmail.com",
                 "password": "123",
                 "first_name": "Miriti",
                 "last_name": "eric"
@@ -99,7 +100,7 @@ class CreateUserTestCase(unittest.TestCase):
         )
         self.assertEqual(res.status_code, 401)
         self.assertIn(
-            "Password must be 6 - 20 Characters and can only contains leters",
+            "Password must be 6-20 Characters and can only contains leters",
             str(res.data)
         )
 

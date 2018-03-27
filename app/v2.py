@@ -186,7 +186,10 @@ def get_business(business_id):
 @version2.route('businesses', methods=['GET'])
 def get_busineses():
     """Returns all registered businesses"""
-    all = Business.query.all()
+    page = request.args.get('page', 1, type=int)
+    # get paginated list of businesses. default is page 1
+    all = Business.query.order_by(Business.created_at.desc()).paginate(
+        page, 5, False).items
     output = []
     for business in all:
         business_data = {}
@@ -288,7 +291,11 @@ def get_business_reviews(businessId):
         return jsonify({
             "message": "Business not found"
         }), 401
-    reviews = Review.query.filter_by(business_id=businessId).all()
+    page = request.args.get('page', 1, type=int)
+    # get paginated list of businesses. default is page 1
+    reviews = Review.query.filter_by(business_id=businessId).order_by(Review.created_at.desc()).paginate(
+        page, 5, False).items
+
     if not reviews:
         return jsonify({"message": "No Reviews for this business"})
     output = []

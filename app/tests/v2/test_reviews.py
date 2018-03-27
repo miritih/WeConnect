@@ -114,7 +114,6 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         response = json.loads(bus.data.decode('utf-8'))
-        print(response)
         res = self.client().get(
             'api/v2/businesses/' + str(response['Details']['id']) + '/reviews',
             headers={

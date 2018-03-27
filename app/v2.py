@@ -8,7 +8,8 @@ import datetime
 from instance.json_schema import (reg_user_schema,
                                   login_schema,
                                   reset_pass,
-                                  new_business
+                                  new_business,
+                                  review_schema
                                   )
 from app.models.v2 import User, Business, Review
 from app import create_app, db
@@ -249,3 +250,55 @@ def delete_business(current_user, businessId):
             "message": "Sorry! You can only delete your business!!"
         }), 401
     return jsonify({"message": "Business not found"}), 401
+
+
+@version2.route('businesses/<businessId>/reviews', methods=['POST'])
+@login_required
+def create_review(current_user, businessId):
+    """ Add revies to a business. only logged in users"""
+    data = request.get_json()
+    validator = Validator(review_schema)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    biz = Business.query.filter_by(id=businessId).first()
+    if not biz:
+        return jsonify({
+            "message": "Business not found"
+        }), 401
+    review = Review(
+        title=data['title'],
+        body=data['review'],
+        user_id=current_user.id,
+        business_id=biz.id
+    )
+    db.session.add(review)
+    db.session.commit()
+    return jsonify({
+        "message": "Your Review was added"
+    }), 201
+
+
+@version2.route('businesses/<businessId>/reviews', methods=['GET'])
+def get_business_reviews(businessId):
+    """Gets all reviews for a business"""
+    business = Business.query.filter_by(id=businessId).first()
+    if not business:
+        return jsonify({
+            "message": "Business not found"
+        }), 401
+    reviews = Review.query.filter_by(business_id=businessId).all()
+    if not reviews:
+        return jsonify({"message": "No Reviews for this business"})
+    output = []
+    for review in reviews:
+        review_data = {}
+        review_data['id'] = review.id
+        review_data['title'] = review.title
+        review_data['body'] = review.body
+        review_data['business_id'] = review.rvwbusines.id
+        review_data['user_id'] = review.rvwowner.id
+        output.append(review_data)
+
+    return jsonify(output)

@@ -87,3 +87,15 @@ new_business = {
         'empty': False
     }
 }
+review_schema = {
+    "review": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "title": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    }
+}

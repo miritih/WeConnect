@@ -36,6 +36,7 @@ class LogoutUserTestCase(unittest.TestCase):
             content_type='application/json'
         )
         self.data = json.loads(self.login.get_data(as_text=True))
+        print(self.data)
         self.token = self.data['auth_token']
 
     def tearDown(self):

@@ -2,10 +2,10 @@ import unittest
 import os
 import json
 from app import create_app
-from app.models.v2 import Business
+from app.models.v2 import Business, User
 
 
-class CreateUserTestCase(unittest.TestCase):
+class DeleteBusinessTestCase(unittest.TestCase):
     """This class represents the api test case"""
 
     def setUp(self):
@@ -22,23 +22,16 @@ class CreateUserTestCase(unittest.TestCase):
             "first_name": "eric",
             "last_name": "Miriti"
         }
-
         self.logins = {
             "username": "mwenda",
             "password": "qwerty123!@#"
         }
 
         self.business = {
-            "name": "Safaricom",
+            "name": "Andela",
             "location": "Nairobi,Kenya",
-            "category": "Telecommunication",
-            "bio": "The better option"
-        }
-        self.update_business = {
-            "name": "",
-            "location": "Mombasa",
-            "category": "",
-            "bio": ""
+            "category": "Tech",
+            "bio": "Epic"
         }
         self.client().post(
             '/api/v2/auth/register',
@@ -59,77 +52,53 @@ class CreateUserTestCase(unittest.TestCase):
         """ clear data after every test"""
         Business.query.delete()
 
-    def test_business_can_updated_successfully(self):
-        """Tests that a business can be updated successfully"""
+    def test_can_delete_successfully(self):
+        """Tests that a business can be Deleted successfully"""
         res = self.client().post(
             '/api/v2/businesses',
             data=json.dumps(self.business),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
-            }
-        )
-        bsid = Business.query.first()
-        res2 = self.client().put(
+            })
+        bsid = Business.query.first()  # Get the last created Record
+        res2 = self.client().delete(
             '/api/v2/businesses/' + str(bsid.id),
-            data=json.dumps(self.update_business),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
-            }
-        )
-        self.assertEqual(res2.status_code, 202)
-        self.assertIn("business updated!", str(res2.data))
+            })
 
-    def can_can_get_businesses(self):
-        """test can get all busineses"""
-        self.client().post(
-            '/api/v2/businesses',
-            data=json.dumps(self.business),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
-        res = self.client().get(
-            '/api/v2/businesses',
-            headers={"access-token": self.token}
-        )
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(len(Business.query.all()), 1)
+        self.assertEqual(res2.status_code, 201)
+        self.assertIn("Business Deleted", str(res2.data))
 
-    def test_bussiness_exists(self):
-        """tests cannot get a buiness that does not exist"""
-        res = self.client().get(
-            '/api/v2/businesses/9212',
-            headers={"access-token": self.token}
-        )
-        self.assertEqual(res.status_code, 401)
-        self.assertIn("Business not found", str(res.data))
-
-    def test_bussiness_name_taken(self):
-        """tests cannot get a buiness that does not exist"""
-        res = self.client().post(
-            '/api/v2/businesses',
-            data=json.dumps(self.business),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
-        res2 = self.client().post(
-            '/api/v2/businesses',
-            data=json.dumps(self.business),
+    def test_cannot_delete_empty(self):
+        """Tests that cannot delete a business that doesn't exist"""
+        res2 = self.client().delete(
+            '/api/v2/businesses/1',
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
         self.assertEqual(res2.status_code, 401)
-        self.assertIn("Sorry!! Business name taken!", str(res2.data))
+        self.assertIn("Business not found", str(res2.data))
 
-    def test_can_only_update_own_business(self):
-        """Tests that users cannot update other users businesses"""
+    def can_only_delete_own_business(self):
+        """test that one can only delete a business they created """
+        res2 = self.client().delete(
+            '/api/v2/businesses/1',
+            headers={
+                "content-type": "application/json",
+                "access-token": self.token
+            }
+        )
+        self.assertEqual(res2.status_code, 401)
+        self.assertIn(
+            "Sorry! You can only delete your business!!", str(res2.data))
+
+    def test_can_only_delete_own_business(self):
+        """Tests that users cannot delete other users businesses"""
         self.client().post(
             '/api/v2/auth/register',
             data=json.dumps({
@@ -160,42 +129,13 @@ class CreateUserTestCase(unittest.TestCase):
             }
         )
         response = json.loads(bs.data.decode('utf-8'))
-        res2 = self.client().put(
+        res2 = self.client().delete(
             '/api/v2/businesses/' + str(response['Details']['id']),
-            data=json.dumps(self.update_business),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
-        # self.assertEqual(res2.status_code, 401)
-        self.assertIn(
-            "Sorry! You can only update your business",
-            str(res2.data)
-        )
-
-    def test_can_get_business(self):
-        """
-        Tests that all registerd 
-        businesses can be retrived
-        """
-        initial_count = len(Business.query.all())
-        self.client().post(
-            '/api/v2/businesses',
-            data=json.dumps(self.business),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
-        res = self.client().get(
-            '/api/v2/businesses',
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
-        final_count = len(Business.query.all())
-        response = json.loads(res.data.decode('utf-8'))
-        self.assertEqual(final_count - initial_count, 1)
-        self.assertEqual(len(response), 1)
+        self.assertEqual(res2.status_code, 401)
+        self.assertIn("Sorry! You can only delete your business",
+                      str(res2.data))

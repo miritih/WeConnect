@@ -158,6 +158,7 @@ def register_business(current_user):
     db.session.commit()
     return jsonify({
         "message": "Business created", "Details": {
+            "id": new_biz.id,
             "name": new_biz.name,
             "location": new_biz.location,
             "category": new_biz.category,
@@ -230,3 +231,21 @@ def update_business(current_user, businessId):
     return jsonify({
         "message": "Sorry! You can only update your business!!"
     }), 401
+
+
+@version2.route('businesses/<businessId>', methods=['DELETE'])
+@login_required
+def delete_business(current_user, businessId):
+    """ deletes a business"""
+    business = Business.query.filter_by(id=businessId).first()
+    if business:
+        if business.bsowner.id == current_user.id:
+            db.session.delete(business)
+            db.session.commit()
+            return jsonify({
+                "message": "Business Deleted",
+            }), 201
+        return jsonify({
+            "message": "Sorry! You can only delete your business!!"
+        }), 401
+    return jsonify({"message": "Business not found"}), 401

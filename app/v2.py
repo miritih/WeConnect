@@ -302,3 +302,17 @@ def get_business_reviews(businessId):
         output.append(review_data)
 
     return jsonify(output)
+
+
+@version2.route('businesses/<businessId>/reviews/<reviewId>', methods=['DELETE'])
+@login_required
+def delete_business_reviews(current_user, businessId, reviewId):
+    """Delete a business review"""
+    review = Review.query.filter_by(id=reviewId).first()
+    if not review:
+        return jsonify({"Error": "Review does not exist"})
+    if current_user.id != review.user_id:
+        return jsonify({"Error": "you can only delete your reviews"})
+    db.session.delete(review)
+    db.session.commit()
+    return jsonify({"sucess": "Review deleted successfully"})

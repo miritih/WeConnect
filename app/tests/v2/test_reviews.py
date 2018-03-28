@@ -72,7 +72,7 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bus.data.decode('utf-8'))
         self.client().post(
-            'api/v2/businesses/' + str(response['Details']['id']) + '/reviews',
+            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -80,7 +80,7 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         self.client().post(
-            'api/v2/businesses/' + str(response['Details']['id']) + '/reviews',
+            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -88,7 +88,7 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res = self.client().get(
-            'api/v2/businesses/' + str(response['Details']['id']) + '/reviews',
+            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
@@ -115,7 +115,7 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bus.data.decode('utf-8'))
         res = self.client().get(
-            'api/v2/businesses/' + str(response['Details']['id']) + '/reviews',
+            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
             headers={
                 "content-type": "application/json",
                 "access-token": self.token

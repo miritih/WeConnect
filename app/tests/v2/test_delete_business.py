@@ -103,7 +103,7 @@ class DeleteBusinessTestCase(unittest.TestCase):
             '/api/v2/auth/register',
             data=json.dumps({
                 "username": "Miritim",
-                "email": "ericmwenda55@gmail.com",
+                "email": "ericmwenda552@gmail.com",
                 "password": "qwerty123!@#",
                 "first_name": "eric",
                 "last_name": "Miriti"
@@ -130,7 +130,7 @@ class DeleteBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bs.data.decode('utf-8'))
         res2 = self.client().delete(
-            '/api/v2/businesses/' + str(response['Details']['id']),
+            '/api/v2/businesses/' + str(response['Business']['id']),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token

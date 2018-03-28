@@ -134,7 +134,7 @@ class CreateUserTestCase(unittest.TestCase):
             '/api/v2/auth/register',
             data=json.dumps({
                 "username": "Miritim",
-                "email": "ericmwenda55@gmail.com",
+                "email": "ericmwenda556@gmail.com",
                 "password": "qwerty123!@#",
                 "first_name": "eric",
                 "last_name": "Miriti"
@@ -161,7 +161,7 @@ class CreateUserTestCase(unittest.TestCase):
         )
         response = json.loads(bs.data.decode('utf-8'))
         res2 = self.client().put(
-            '/api/v2/businesses/' + str(response['Details']['id']),
+            '/api/v2/businesses/' + str(response['Business']['id']),
             data=json.dumps(self.update_business),
             headers={
                 "content-type": "application/json",

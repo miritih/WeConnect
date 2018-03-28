@@ -193,10 +193,25 @@ def get_business(business_id):
 def get_busineses():
     """Returns all registered businesses"""
     page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 10, type=int)
+    location = request.args.get('location', default=None, type=str)
+    category = request.args.get('category',None,type=str)
+    name = request.args.get('name',None,type=str)
+    
+    dummy = Business.query.filter(Business.location=="Nairobi,Kenya")
+    print(location)
+    
     # get paginated list of businesses. default is page 1
-    all = Business.query.order_by(Business.created_at.desc()).paginate(
-        page, 5, False).items
-    return jsonify([{
+    results = Business.query.order_by(Business.created_at.desc()).paginate(
+        page, limit,True)
+    all = results.items
+    return jsonify({
+        "total_results": results.total,
+        "total_pages":results.pages,
+        "page": results.page,
+        "per_page": results.per_page,
+      "objects":
+        [{
         'id':business.id,
         'name': business.name,
         'location': business.location,
@@ -206,7 +221,7 @@ def get_busineses():
         'created_at':business.created_at,
         'update_at':business.updated_at
     } for business in all
-    ])
+    ]})
     
 @version2.route('businesses/<businessId>', methods=['PUT'])
 @login_required

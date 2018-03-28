@@ -198,4 +198,4 @@ class CreateUserTestCase(unittest.TestCase):
         final_count = len(Business.query.all())
         response = json.loads(res.data.decode('utf-8'))
         self.assertEqual(final_count - initial_count, 1)
-        self.assertEqual(len(response), 1)
+        self.assertEqual(len(response['objects']), 1)

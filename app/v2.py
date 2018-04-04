@@ -187,21 +187,56 @@ def get_business(business_id):
             'update_at':business.updated_at
         })
     return jsonify({"message": "Business not found"}), 401
+    
+@version2.route('businesses/user', methods=['GET'])
+@login_required
+def get_user_businesses(current_user):
+    """ returns all user businesses"""
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 10, type=int)
+    results = Business.query.filter_by(user_id=current_user.id).paginate(
+                                page, limit,True)
+    all = results.items
+    return jsonify({
+            "total_results": results.total,
+            "total_pages":results.pages,
+            "page": results.page,
+            "per_page": results.per_page,
+            "objects":
+        [{
+            'id':business.id,
+            'name': business.name,
+            'location': business.location,
+            'category': business.category,
+            'bio':business.bio,
+            'user_id': business.bsowner.id,
+            'created_at':business.created_at,
+            'update_at':business.updated_at
+        } for business in all
+    ]})
 
 
 @version2.route('businesses', methods=['GET'])
 def get_busineses():
     """Returns all registered businesses"""
+    # get all search params form the url if any
     page = request.args.get('page', 1, type=int)
     limit = request.args.get('limit', 10, type=int)
     location = request.args.get('location', default=None, type=str)
     category = request.args.get('category',None,type=str)
     name = request.args.get('name',None,type=str)
     
-    dummy = Business.query.filter(Business.location=="Nairobi,Kenya")
-    print(location)
+    # set all serch parameters. 
+    vars={}
+    vars['limit'] = limit
+    vars['page'] = page
+    vars['location'] = location
+    vars['category'] = category
+    vars['name'] = name
     
     # get paginated list of businesses. default is page 1
+    alll = Business.search(vars)
+    print(alll.items)
     results = Business.query.order_by(Business.created_at.desc()).paginate(
         page, limit,True)
     all = results.items

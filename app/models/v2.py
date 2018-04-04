@@ -54,6 +54,46 @@ class Business(TimestampMixin, db.Model):
         cascade='all, delete-orphan'
     )
 
+    def search(filters):
+        """
+        Method to perform serch on businesses 
+        using either name location or category
+        """
+        category = filters["category"]
+        name = filters["name"]
+        location = filters["location"]
+        page = filters["page"]
+        limit = filters['limit']
+
+        if location and category and name:
+            bs = Business.query.filter(
+                Business.location.ilike("%" + location + "%"),
+                Business.category.ilike("%" + category + "%"),
+                Business.name.ilike("%" + name + "%")
+            ).paginate(page, limit, True)
+            return bs
+
+        if location and not category and not name:
+            bs = Business.query.filter(
+                Business.location.ilike("%" + location + "%")
+            ).paginate(page, limit, True)
+            return bs
+
+        if category and not name and not location:
+            bs = Business.query.filter(
+                Business.category.ilike("%" + category + "%")
+            ).paginate(page, limit, True)
+            return bs
+        if name and not location and not category:
+            bs = Business.query.filter(
+                Business.name.ilike("%" + name + "%")
+            ).paginate(page, limit, True)
+            return bs
+        # if no filters then return all businesses
+        all = Business.query.order_by(Business.created_at.desc()).paginate(
+        page, limit,True)
+        return all
+
 
 class Review(TimestampMixin, db.Model):
     """ Creates Reviews table"""

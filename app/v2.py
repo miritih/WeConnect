@@ -9,8 +9,9 @@ from instance.json_schema import (reg_user_schema,
                                   login_schema,
                                   reset_pass,
                                   new_business,
-                                  review_schema
+                                  review_schema,
                                   )
+from instance.validations import search
 from app.models.v2 import User, Business, Review
 from app import create_app, db
 from cerberus import Validator
@@ -165,8 +166,8 @@ def register_business(current_user):
             "category": new_biz.category,
             'bio': new_biz.bio,
             'user_id': new_biz.bsowner.id,
-            'created_at':new_biz.created_at,
-            'update_at':new_biz.updated_at
+            'created_at': new_biz.created_at,
+            'update_at': new_biz.updated_at
         }
     }), 201
 
@@ -183,11 +184,12 @@ def get_business(business_id):
             'category': business.category,
             'bio': business.bio,
             'user_id': business.bsowner.id,
-            'created_at':business.created_at,
-            'update_at':business.updated_at
+            'created_at': business.created_at,
+            'update_at': business.updated_at
         })
     return jsonify({"message": "Business not found"}), 401
-    
+
+
 @version2.route('businesses/user', methods=['GET'])
 @login_required
 def get_user_businesses(current_user):
@@ -195,69 +197,65 @@ def get_user_businesses(current_user):
     page = request.args.get('page', 1, type=int)
     limit = request.args.get('limit', 10, type=int)
     results = Business.query.filter_by(user_id=current_user.id).paginate(
-                                page, limit,True)
+        page, limit, True)
     all = results.items
     return jsonify({
-            "total_results": results.total,
-            "total_pages":results.pages,
-            "page": results.page,
-            "per_page": results.per_page,
-            "objects":
+        "total_results": results.total,
+        "total_pages": results.pages,
+        "page": results.page,
+        "per_page": results.per_page,
+        "objects":
         [{
-            'id':business.id,
+            'id': business.id,
             'name': business.name,
             'location': business.location,
             'category': business.category,
-            'bio':business.bio,
+            'bio': business.bio,
             'user_id': business.bsowner.id,
-            'created_at':business.created_at,
-            'update_at':business.updated_at
+            'created_at': business.created_at,
+            'update_at': business.updated_at
         } for business in all
-    ]})
+        ]})
 
 
 @version2.route('businesses', methods=['GET'])
 def get_busineses():
     """Returns all registered businesses"""
-    # get all search params form the url if any
-    page = request.args.get('page', 1, type=int)
-    limit = request.args.get('limit', 10, type=int)
-    location = request.args.get('location', default=None, type=str)
-    category = request.args.get('category',None,type=str)
-    name = request.args.get('name',None,type=str)
-    
-    # set all serch parameters. 
-    vars={}
-    vars['limit'] = limit
-    vars['page'] = page
-    vars['location'] = location
-    vars['category'] = category
-    vars['name'] = name
-    
+
+   # set all serch parameters.
+    vars = {
+        'page': request.args.get('page', 1, type=int),
+        'limit': request.args.get('limit', 10, type=int),
+        'location': request.args.get('location', default=None, type=str),
+        'category': request.args.get('category', None, type=str),
+        'name': request.args.get('name', None, type=str)
+    }
+
     # get paginated list of businesses. default is page 1
-    alll = Business.search(vars)
+    alll = search(vars)
     print(alll.items)
     results = Business.query.order_by(Business.created_at.desc()).paginate(
-        page, limit,True)
+        vars['page'], vars['limit'], True)
     all = results.items
     return jsonify({
         "total_results": results.total,
-        "total_pages":results.pages,
+        "total_pages": results.pages,
         "page": results.page,
         "per_page": results.per_page,
-      "objects":
+        "objects":
         [{
-        'id':business.id,
-        'name': business.name,
-        'location': business.location,
-        'category': business.category,
-        'bio':business.bio,
-        'user_id': business.bsowner.id,
-        'created_at':business.created_at,
-        'update_at':business.updated_at
-    } for business in all
-    ]})
-    
+            'id': business.id,
+            'name': business.name,
+            'location': business.location,
+            'category': business.category,
+            'bio': business.bio,
+            'user_id': business.bsowner.id,
+            'created_at': business.created_at,
+            'update_at': business.updated_at
+        } for business in all
+        ]})
+
+
 @version2.route('businesses/<businessId>', methods=['PUT'])
 @login_required
 def update_business(current_user, businessId):
@@ -335,12 +333,12 @@ def create_review(current_user, businessId):
     db.session.commit()
     return jsonify({
         "message": "Your Review was added",
-        "Review":{
-            'id':review.id,
-            'title':review.title,
-            'body':review.body,
-            'user_id':review.user_id,
-            'business_id':review.business_id
+        "Review": {
+            'id': review.id,
+            'title': review.title,
+            'body': review.body,
+            'user_id': review.user_id,
+            'business_id': review.business_id
         }
     }), 201
 
@@ -360,12 +358,12 @@ def get_business_reviews(businessId):
 
     if not reviews:
         return jsonify({"message": "No Reviews for this business"})
-        
+
     return jsonify([{
-        'id':review.id,
-        'title':review.title,
-        'body':review.body,
-        'business_id':review.rvwbusines.id,
+        'id': review.id,
+        'title': review.title,
+        'body': review.body,
+        'business_id': review.rvwbusines.id,
         'user_id': review.rvwowner.id
     }for review in reviews
     ])
@@ -385,10 +383,11 @@ def delete_business_reviews(current_user, businessId, reviewId):
         return jsonify({
             "message": "Business not found"
         }), 401
-        
+
     db.session.delete(review)
     db.session.commit()
     return jsonify({"sucess": "Review deleted successfully"})
+
 
 @version2.route('businesses/<businessId>/reviews/<reviewId>', methods=['PUT'])
 @login_required
@@ -408,18 +407,17 @@ def update_business_reviews(current_user, businessId, reviewId):
         return jsonify({
             "message": "Business not found"
         }), 401
-        
-    review.title=data['title'] if data['title'] else review.title
-    review.body=data['review'] if data['review'] else review.title
+
+    review.title = data['title'] if data['title'] else review.title
+    review.body = data['review'] if data['review'] else review.title
     db.session.commit()
     return jsonify({
         "message": "Review Updated",
-        "Review":{
-        'id':review.id,
-        'title':review.title,
-        'body':review.body,
-        'business_id':review.rvwbusines.id,
-        'user_id': review.rvwowner.id
+        "Review": {
+            'id': review.id,
+            'title': review.title,
+            'body': review.body,
+            'business_id': review.rvwbusines.id,
+            'user_id': review.rvwowner.id
         }
     })
-    

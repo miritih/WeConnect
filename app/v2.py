@@ -231,12 +231,10 @@ def get_busineses():
         'name': request.args.get('name', None, type=str)
     }
 
-    # get paginated list of businesses. default is page 1
-    alll = search(vars)
-    print(alll.items)
-    results = Business.query.order_by(Business.created_at.desc()).paginate(
-        vars['page'], vars['limit'], True)
+    # get paginated list of businesses. 
+    results =  search(vars)
     all = results.items
+    
     return jsonify({
         "total_results": results.total,
         "total_pages": results.pages,

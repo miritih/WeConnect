@@ -54,7 +54,6 @@ def search(filters):
         Method to perform serch on businesses 
         using either name location or category
         """
-        print(filters)
         category = filters["category"]
         name = filters["name"]
         location = filters["location"]

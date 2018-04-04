@@ -227,7 +227,7 @@ def get_busineses():
         'limit': request.args.get('limit', 10, type=int),
         'location': request.args.get('location', default=None, type=str),
         'category': request.args.get('category', None, type=str),
-        'name': request.args.get('name', None, type=str)
+        'name': request.args.get('q', None, type=str)
     }
 
     # get paginated list of businesses.

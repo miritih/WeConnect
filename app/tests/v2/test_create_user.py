@@ -1,5 +1,4 @@
 import unittest
-import os
 import json
 from app import create_app
 from app.models.v2 import User
@@ -45,7 +44,7 @@ class CreateUserTestCase(unittest.TestCase):
         """
         Tests that duplicate usernames cannot be created
         """
-        res = self.client().post(
+        self.client().post(
             '/api/v2/auth/register',
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
@@ -72,7 +71,7 @@ class CreateUserTestCase(unittest.TestCase):
 
     def test_email_cannot_duplicate(self):
         """Test cannot create duplicate emmails"""
-        res = self.client().post(
+        self.client().post(
             '/api/v2/auth/register',
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
@@ -103,6 +102,7 @@ class CreateUserTestCase(unittest.TestCase):
             "Password must be 6-20 Characters and can only contains leters",
             str(res.data)
         )
+
 
 if __name__ == "__main__":
     unittest.main()

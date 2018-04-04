@@ -1,5 +1,4 @@
 import unittest
-import os
 import json
 from app import create_app
 from app.models.v2 import Review
@@ -72,7 +71,8 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bus.data.decode('utf-8'))
         self.client().post(
-            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' + str(
+                response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -80,7 +80,8 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         self.client().post(
-            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' + str(
+                response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -88,7 +89,8 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res = self.client().get(
-            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' + str(
+                response['Business']['id']) + '/reviews',
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
@@ -115,7 +117,8 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bus.data.decode('utf-8'))
         res = self.client().get(
-            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' + str(
+                response['Business']['id']) + '/reviews',
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
@@ -126,7 +129,7 @@ class AddBusinessTestCase(unittest.TestCase):
 
     def test_business_not_exists(self):
         """
-        Test to verify cannot get reviews 
+        Test to verify cannot get reviews
         for a business that does not exist
         """
         res = self.client().get(

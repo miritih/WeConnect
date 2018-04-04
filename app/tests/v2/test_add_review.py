@@ -1,8 +1,7 @@
 import unittest
-import os
 import json
 from app import create_app
-from app.models.v2 import Business, Review, User
+from app.models.v2 import Business, Review
 
 
 class AddBusinessTestCase(unittest.TestCase):
@@ -74,7 +73,8 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         response = json.loads(bus.data.decode('utf-8'))
         res = self.client().post(
-            'api/v2/businesses/' + str(response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' +
+            str(response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",

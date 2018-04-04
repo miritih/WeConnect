@@ -19,7 +19,8 @@ def validate_email(field, value, error):
     """Validates the correct email and that email is not taken"""
     if User.query.filter_by(email=value).first():
         error(field, "Sorry!! Email taken!")
-    if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,4}$', value):
+    if not re.match(
+            r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,4}$', value):
         error(field, "Invalid Email")
 
 
@@ -49,64 +50,65 @@ def validate_bsname(field, value, error):
     if Business.query.filter_by(name=name).first():
         error(field, "Sorry!! Business name taken!")
 
+
 def search(filters):
-        """
-        Method to perform serch on businesses 
-        using either name location or category
-        """
-        category = filters["category"]
-        name = filters["name"]
-        location = filters["location"]
-        page = filters["page"]
-        limit = filters['limit']
-        
-        if location and category and name:
-            bs = Business.query.filter(
-                Business.location.ilike("%" + location + "%"),
-                Business.category.ilike("%" + category + "%"),
-                Business.name.ilike("%" + name + "%")
-            ).paginate(page, limit, True)
-            return bs
+    """
+    Method to perform serch on businesses
+    using either name location or category
+    """
+    category = filters["category"]
+    name = filters["name"]
+    location = filters["location"]
+    page = filters["page"]
+    limit = filters['limit']
 
-        if location and not category and not name:
-            bs = Business.query.filter(
-                Business.location.ilike("%" + location + "%")
-            ).paginate(page, limit, True)
-            return bs
+    if location and category and name:
+        bs = Business.query.filter(
+            Business.location.ilike("%" + location + "%"),
+            Business.category.ilike("%" + category + "%"),
+            Business.name.ilike("%" + name + "%")
+        ).paginate(page, limit, True)
+        return bs
 
-        if category and not name and not location:
-            bs = Business.query.filter(
-                Business.category.ilike("%" + category + "%")
-            ).paginate(page, limit, True)
-            return bs
-        if name and not location and not category:
-            bs = Business.query.filter(
-                Business.name.ilike("%" + name + "%")
-            ).paginate(page, limit, True)
-            return bs
-            
-        if name and category and not location:
-            bs = Business.query.filter(
-                Business.name.ilike("%" + name + "%"),
-                Business.category.ilike("%" + category + "%")
-            ).paginate(page, limit, True)
-            return bs
-            
-        if name and location and not category:
-            bs = Business.query.filter(
-                Business.name.ilike("%" + name + "%"),
-                Business.location.ilike("%" + location + "%")
-            ).paginate(page, limit, True)
-            return bs
-            
-        if location and  category and not name :
-            bs = Business.query.filter(
-                Business.category.ilike("%" + category + "%"),
-                Business.location.ilike("%" + location + "%")
-            ).paginate(page, limit, True)
-            return bs
-        
-        # if no filters then return all businesses
-        all = Business.query.order_by(Business.created_at.desc()).paginate(
-        page, limit,True)
-        return all
+    if location and not category and not name:
+        bs = Business.query.filter(
+            Business.location.ilike("%" + location + "%")
+        ).paginate(page, limit, True)
+        return bs
+
+    if category and not name and not location:
+        bs = Business.query.filter(
+            Business.category.ilike("%" + category + "%")
+        ).paginate(page, limit, True)
+        return bs
+    if name and not location and not category:
+        bs = Business.query.filter(
+            Business.name.ilike("%" + name + "%")
+        ).paginate(page, limit, True)
+        return bs
+
+    if name and category and not location:
+        bs = Business.query.filter(
+            Business.name.ilike("%" + name + "%"),
+            Business.category.ilike("%" + category + "%")
+        ).paginate(page, limit, True)
+        return bs
+
+    if name and location and not category:
+        bs = Business.query.filter(
+            Business.name.ilike("%" + name + "%"),
+            Business.location.ilike("%" + location + "%")
+        ).paginate(page, limit, True)
+        return bs
+
+    if location and category and not name:
+        bs = Business.query.filter(
+            Business.category.ilike("%" + category + "%"),
+            Business.location.ilike("%" + location + "%")
+        ).paginate(page, limit, True)
+        return bs
+
+    # if no filters then return all businesses
+    all = Business.query.order_by(Business.created_at.desc()).paginate(
+        page, limit, True)
+    return all

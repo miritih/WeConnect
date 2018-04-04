@@ -1,5 +1,4 @@
 import unittest
-import os
 import json
 from app import create_app
 from app.models.v2 import Business
@@ -61,7 +60,7 @@ class CreateUserTestCase(unittest.TestCase):
 
     def test_business_can_updated_successfully(self):
         """Tests that a business can be updated successfully"""
-        res = self.client().post(
+        self.client().post(
             '/api/v2/businesses',
             data=json.dumps(self.business),
             headers={
@@ -109,7 +108,7 @@ class CreateUserTestCase(unittest.TestCase):
 
     def test_bussiness_name_taken(self):
         """tests cannot get a buiness that does not exist"""
-        res = self.client().post(
+        self.client().post(
             '/api/v2/businesses',
             data=json.dumps(self.business),
             headers={
@@ -176,7 +175,7 @@ class CreateUserTestCase(unittest.TestCase):
 
     def test_can_get_business(self):
         """
-        Tests that all registerd 
+        Tests that all registerd
         businesses can be retrived
         """
         initial_count = len(Business.query.all())

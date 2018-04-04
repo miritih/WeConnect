@@ -2,10 +2,7 @@ from app import db
 
 
 class TimestampMixin(object):
-    """
-    This will add created_at and 
-    updated_at timestamps to every table
-    """
+    """This will add created_at and updated_at timestamps to every table"""
     created_at = db.Column(
         db.DateTime,
         server_default=db.func.now()

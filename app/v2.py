@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-import re
 import os
 import jwt
 import datetime
@@ -46,7 +45,7 @@ def login_required(f):
             ).first()
             if not current_user:
                 return jsonify({"message": "You are not logged in"}), 401
-        except Exception as e:
+        except Exception:
             return jsonify({'message': 'Token is invalid or Expired!'}), 401
         return f(current_user, *args, **kwargs)
     return decorated
@@ -98,14 +97,15 @@ def login():
         if check_password_hash(user.password, auth['password']):
             token = jwt.encode({
                 'username': user.username,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1000)},
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(
+                    minutes=1000)},
                 os.getenv("SECRET_KEY")
             )
             user.logged_in = True
             db.session.commit()
             return jsonify({"auth_token": token.decode('UTF-8')}), 200
         return jsonify({"message": "Wrong password!"}), 401
-    except Exception as e:
+    except Exception:
         return jsonify({
             "Error": "Error!, check you are sending correct information"}), 400
 
@@ -221,8 +221,7 @@ def get_user_businesses(current_user):
 @version2.route('businesses', methods=['GET'])
 def get_busineses():
     """Returns all registered businesses"""
-
-   # set all serch parameters.
+    # set all serch parameters.
     vars = {
         'page': request.args.get('page', 1, type=int),
         'limit': request.args.get('limit', 10, type=int),
@@ -231,10 +230,10 @@ def get_busineses():
         'name': request.args.get('name', None, type=str)
     }
 
-    # get paginated list of businesses. 
-    results =  search(vars)
+    # get paginated list of businesses.
+    results = search(vars)
     all = results.items
-    
+
     return jsonify({
         "total_results": results.total,
         "total_pages": results.pages,
@@ -351,7 +350,8 @@ def get_business_reviews(businessId):
         }), 401
     page = request.args.get('page', 1, type=int)
     # get paginated list of businesses. default is page 1
-    reviews = Review.query.filter_by(business_id=businessId).order_by(Review.created_at.desc()).paginate(
+    reviews = Review.query.filter_by(
+        business_id=businessId).order_by(Review.created_at.desc()).paginate(
         page, 5, False).items
 
     if not reviews:
@@ -367,7 +367,8 @@ def get_business_reviews(businessId):
     ])
 
 
-@version2.route('businesses/<businessId>/reviews/<reviewId>', methods=['DELETE'])
+@version2.route('businesses/<businessId>/reviews/<reviewId>',
+                methods=['DELETE'])
 @login_required
 def delete_business_reviews(current_user, businessId, reviewId):
     """Delete a business review"""

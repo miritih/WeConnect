@@ -79,7 +79,7 @@ class AddBusinessTestCase(unittest.TestCase):
 
     def test_cannot_create_duplicate(self):
         """Tests that no two businesses can exist with similar name"""
-        res = self.client().post(
+        self.client().post(
             '/api/v2/businesses',
             data=json.dumps(self.business),
             headers={

@@ -1,8 +1,7 @@
 import unittest
-import os
 import json
 from app import create_app
-from app.models.v2 import Business, User
+from app.models.v2 import Business
 
 
 class DeleteBusinessTestCase(unittest.TestCase):
@@ -54,7 +53,7 @@ class DeleteBusinessTestCase(unittest.TestCase):
 
     def test_can_delete_successfully(self):
         """Tests that a business can be Deleted successfully"""
-        res = self.client().post(
+        self.client().post(
             '/api/v2/businesses',
             data=json.dumps(self.business),
             headers={

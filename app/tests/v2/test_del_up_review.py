@@ -1,8 +1,8 @@
 import unittest
-import os
 import json
 from app import create_app
-from app.models.v2 import Business, Review, User
+from app.models.v2 import Business, Review
+
 
 class AddBusinessTestCase(unittest.TestCase):
     """This class represents the api test case"""
@@ -54,7 +54,6 @@ class AddBusinessTestCase(unittest.TestCase):
 
         # get the token to be used by tests
         self.token = self.data['auth_token']
-        
         # register business for reviews
         bus = self.client().post(
             '/api/v2/businesses',
@@ -74,8 +73,8 @@ class AddBusinessTestCase(unittest.TestCase):
     def test_review_not_found(self):
         """test cannot delete or update a review that dos not exist"""
         res = self.client().put(
-            'api/v2/businesses/' 
-            + str(self.response['Business']['id']) + '/reviews/1',
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/1',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -83,8 +82,8 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res2 = self.client().delete(
-            'api/v2/businesses/' 
-            + str(self.response['Business']['id']) + '/reviews/1',
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/1',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -93,15 +92,15 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         self.assertIn("Review does not exist", str(res.data))
         self.assertIn("Review does not exist", str(res2.data))
-       
+
     def test_can_delete_review(self):
         """
         Test that reviews can
         be deleted and updated
         """
         res = self.client().post(
-            'api/v2/businesses/' 
-            + str(self.response['Business']['id']) + '/reviews',
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -110,9 +109,9 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         review = json.loads(res.data.decode('utf-8'))
         res1 = self.client().put(
-            'api/v2/businesses/' 
-            + str(self.response['Business']['id']) + '/reviews/' 
-            + str(review['Review']['id']),
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/' + str(
+                review['Review']['id']),
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -120,78 +119,78 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res2 = self.client().delete(
-            'api/v2/businesses/12121212/reviews/' 
-            + str(review['Review']['id']),
+            'api/v2/businesses/12121212/reviews/' + str(
+                review['Review']['id']),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
         res3 = self.client().delete(
-            'api/v2/businesses/' 
-            + str(self.response['Business']['id']) + '/reviews/' 
-            + str(review['Review']['id']),
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/' + str(
+                review['Review']['id']),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
-        
+
         # self.assertEqual(res.status_code, 401)
         self.assertIn("Review Updated", str(res1.data))
         self.assertIn("Business not found", str(res2.data))
         self.assertIn("Review deleted successfully", str(res3.data))
-        
+
     def test_can_only_delete_own_reviews(self):
-      """Tests that users cannot delete other users reviews"""
-      self.client().post(
-              '/api/v2/auth/register',
-              data=json.dumps({
+        """Tests that users cannot delete other users reviews"""
+        self.client().post(
+            '/api/v2/auth/register',
+            data=json.dumps({
                 "username": "mwenda5",
                 "email": "ericmwenda55@gmail.com",
                 "password": "qwerty123!@#",
                 "first_name": "eric",
                 "last_name": "Miriti"
-              }),
-              content_type='application/json'
-          )
-      login = self.client().post(
-              '/api/v2/auth/login',
-              data=json.dumps({
+            }),
+            content_type='application/json'
+        )
+        login = self.client().post(
+            '/api/v2/auth/login',
+            data=json.dumps({
                 "username": "mwenda5",
                 "password": "qwerty123!@#"
-              }),
-              content_type='application/json'
-          )
-      token = json.loads(login.data.decode("utf-8"))
-      res = self.client().post(
-              'api/v2/businesses/' 
-              + str(self.response['Business']['id']) + '/reviews',
-              data=json.dumps(self.review),
-              headers={
-                  "content-type": "application/json",
-                  "access-token": token['auth_token']
-              }
-          )
-      review = json.loads(res.data.decode('utf-8'))
-      res1 = self.client().put(
-              'api/v2/businesses/' 
-              + str(self.response['Business']['id']) + '/reviews/' 
-              + str(review['Review']['id']),
-              data=json.dumps(self.review),
-              headers={
-                  "content-type": "application/json",
-                  "access-token": self.token
-              }
-          )
-      res2 = self.client().delete(
-              'api/v2/businesses/' 
-              + str(self.response['Business']['id']) + '/reviews/' 
-              + str(review['Review']['id']),
-              headers={
-                  "content-type": "application/json",
-                  "access-token": self.token
-              }
-          )
-      self.assertIn("you can only Update your reviews", str(res1.data))
-      self.assertIn("you can only delete your reviews", str(res2.data))
+            }),
+            content_type='application/json'
+        )
+        token = json.loads(login.data.decode("utf-8"))
+        res = self.client().post(
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews',
+            data=json.dumps(self.review),
+            headers={
+                "content-type": "application/json",
+                "access-token": token['auth_token']
+            }
+        )
+        review = json.loads(res.data.decode('utf-8'))
+        res1 = self.client().put(
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/' + str(
+                review['Review']['id']),
+            data=json.dumps(self.review),
+            headers={
+                "content-type": "application/json",
+                "access-token": self.token
+            }
+        )
+        res2 = self.client().delete(
+            'api/v2/businesses/' + str(
+                self.response['Business']['id']) + '/reviews/' + str(
+                review['Review']['id']),
+            headers={
+                "content-type": "application/json",
+                "access-token": self.token
+            }
+        )
+        self.assertIn("you can only Update your reviews", str(res1.data))
+        self.assertIn("you can only delete your reviews", str(res2.data))

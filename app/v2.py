@@ -349,10 +349,11 @@ def get_business_reviews(businessId):
             "message": "Business not found"
         }), 401
     page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 10, type=int)
     # get paginated list of businesses. default is page 1
     reviews = Review.query.filter_by(
         business_id=businessId).order_by(Review.created_at.desc()).paginate(
-        page, 5, False).items
+        page, limit, False).items
 
     if not reviews:
         return jsonify({"message": "No Reviews for this business"})

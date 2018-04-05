@@ -24,6 +24,7 @@ Install project dependencies
 `pip install -r requirements.txt`
 
 Set The following environment variables `SECRET_KEY`,`APP_SETTINGS`,`DATABASE_URI`,`FLASK_APP`
+
 Variable| Description
 ---|---
 `SECRET_KEY`| Sets the applications secret key

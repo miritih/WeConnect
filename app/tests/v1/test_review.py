@@ -1,7 +1,8 @@
 import unittest
 import os
 import json
-from app import create_app, business_model
+from app import create_app
+from app.v1 import business_model, user_model
 
 
 class AddBusinessTestCase(unittest.TestCase):
@@ -21,7 +22,8 @@ class AddBusinessTestCase(unittest.TestCase):
 
         self.business = {"name": "Andela", "location": "Nairobi,Kenya",
                          "category": "Tech", "bio": "Epic"}
-        self.review = {"review": "Awesome Awesome Awesome ", "title":"Awesome title"}
+        self.review = {"review": "Awesome Awesome Awesome ",
+                       "title": "Awesome title"}
 
         self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
                            content_type='application/json')

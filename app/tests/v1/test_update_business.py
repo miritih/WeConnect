@@ -1,7 +1,8 @@
 import unittest
 import os
 import json
-from app import create_app, business_model
+from app import create_app
+from app.v1 import business_model, user_model
 
 
 class CreateUserTestCase(unittest.TestCase):

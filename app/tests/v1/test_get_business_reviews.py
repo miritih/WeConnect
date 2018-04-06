@@ -1,7 +1,8 @@
 import unittest
 import os
 import json
-from app import create_app, business_model, review_model
+from app import create_app
+from app.v1 import business_model, user_model, review_model
 
 
 class AddBusinessTestCase(unittest.TestCase):

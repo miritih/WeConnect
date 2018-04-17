@@ -144,7 +144,10 @@ def reset_password(current_user):
         current_user.password = hashed_password
         db.session.commit()
         return jsonify({"message": "password updated"})
-    return jsonify({"message": "Wrong old Password"}), 406
+    eror={
+      'old_password': "Wrong old Password"
+    }
+    return jsonify({"Errors": eror}), 406
 
 
 @version2.route('auth/update-profile', methods=['PUT'])

@@ -9,6 +9,7 @@ from instance.json_schema import (reg_user_schema,
                                   reset_pass,
                                   new_business,
                                   review_schema,
+                                  update_user_schema
                                   )
 from instance.validations import search
 from app.models.v2 import User, Business, Review
@@ -95,10 +96,18 @@ def login():
         username = auth['username'].strip().lower()
         user = User.query.filter_by(username=username).first()
         if check_password_hash(user.password, auth['password']):
+            user_data= {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "image": user.image,
+                "username": user.username,
+                "email": user.email
+            }
             token = jwt.encode({
                 'username': user.username,
+                'user':user_data,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(
-                    minutes=1000)},
+                    minutes=120)},
                 os.getenv("SECRET_KEY")
             )
             user.logged_in = True
@@ -136,6 +145,33 @@ def reset_password(current_user):
         db.session.commit()
         return jsonify({"message": "password updated"})
     return jsonify({"message": "Wrong old Password"}), 406
+
+
+@version2.route('auth/update-profile', methods=['PUT'])
+@login_required
+def update_profile(current_user):
+    """ Update user profile"""
+    data = request.get_json()
+    validator = Validator(update_user_schema)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    current_user.username = data['username']
+    current_user.email = data['email'],
+    current_user.first_name = data['first_name'],
+    current_user.last_name = data['last_name']
+    current_user.image = data['image']
+    db.session.commit()
+    return jsonify({
+        "Success": "user updated!",
+        "Details": {
+            "email": current_user.email,
+            "username": current_user.username,
+            "first_name": current_user.first_name,
+            "last_name": current_user.last_name
+        }
+    }), 201
 
 
 @version2.route('businesses', methods=['POST'])

@@ -23,6 +23,7 @@ class User(TimestampMixin, db.Model):
     password = db.Column(db.String(255))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
+    image = db.Column(db.String, default="avatar_2x.png")
     logged_in = db.Column(db.Boolean, default=False)
     businesses = db.relationship(
         'Business',

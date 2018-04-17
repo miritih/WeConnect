@@ -38,6 +38,33 @@ reg_user_schema = {
         'empty': False,
     }
 }
+#update user schema
+update_user_schema = {
+    'username': {
+        'type': 'string',
+        'required': True,
+    },
+    'email': {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+    },
+    'first_name': {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+    },
+    'last_name': {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+    },
+    'image': {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+    }
+}
 # login data schema. will validate login data
 login_schema = {
     "username": {

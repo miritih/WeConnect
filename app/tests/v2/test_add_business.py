@@ -96,7 +96,7 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         self.assertEqual(res2.status_code, 401)
-        self.assertIn("Sorry!! Business name taken!", str(res2.data))
+        self.assertIn("Sorry!! name taken!", str(res2.data))
 
     def test_cannot_create_with_name(self):
         """
@@ -111,4 +111,4 @@ class AddBusinessTestCase(unittest.TestCase):
                 "access-token": self.token
             }
         )
-        self.assertIn("Business name cannot be empty", str(res.data))
+        self.assertIn("Field cannot be empty", str(res.data))

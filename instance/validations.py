@@ -6,15 +6,20 @@ All data validation methods will be defined in this file
 """
 
 
-def validate_username(field, value, error):
+def validate_field(field, value, error):
     """validates if username is alredy taken"""
-    username = value.strip().lower()
-    if not username:
+    value = value.strip().lower()
+    tables={"username":User, "name":Business}
+    queries={}
+    if field == "username":
+        queries[field] = [User.username.ilike(value)]
+    else:
+        queries[field] = [Business.name.ilike(value)]
+    if not value:
         error(field, "Field cannot be empty")
-    if User.query.filter_by(username=username).first():
-        error(field, "Sorry!! Username taken!")
-
-
+    error(field, "Sorry!! %s taken!" % (field)) if tables[field].query.filter(*queries[field]).first() else ""
+    
+    
 def validate_email(field, value, error):
     """Validates the correct email and that email is not taken"""
     if User.query.filter_by(email=value).first():
@@ -41,16 +46,6 @@ def validate_password(field, value, error):
             "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
         )
 
-
-def validate_bsname(field, value, error):
-    """ Validate that business name cannot be duplicate"""
-    name = value.strip().lower()
-    if not name:
-        error(field, "Business name cannot be empty")
-    if Business.query.filter_by(name=name).first():
-        error(field, "Sorry!! Business name taken!")
-
-
 def search(filters):
     """
     Method to perform serch on businesses
@@ -68,8 +63,7 @@ def search(filters):
       query.append(Business.category.ilike("%" + category + "%"))
     if location:
        query.append(Business.location.ilike("%" + location + "%"))
-    businesses = Business.query.filter(
-        *query
-    ).paginate(page, limit, True)
+       
+    businesses = Business.query.filter(*query).paginate(page, limit, True)
     
     return businesses

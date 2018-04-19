@@ -125,7 +125,7 @@ class CreateUserTestCase(unittest.TestCase):
             }
         )
         self.assertEqual(res2.status_code, 401)
-        self.assertIn("Sorry!! Business name taken!", str(res2.data))
+        self.assertIn("Sorry!! name taken!", str(res2.data))
 
     def test_can_only_update_own_business(self):
         """Tests that users cannot update other users businesses"""

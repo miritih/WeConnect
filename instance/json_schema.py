@@ -1,8 +1,7 @@
-from instance.validations import (validate_username,
+from instance.validations import (validate_field,
                                   validate_email,
                                   username_taken,
                                   validate_password,
-                                  validate_bsname
                                   )
 """
 This files stores all validation schema for all POST and PUT json data
@@ -13,7 +12,7 @@ reg_user_schema = {
     'username': {
         'type': 'string',
         'required': True,
-        'validator': validate_username
+        'validator': validate_field
     },
     'email': {
         'type': 'string',
@@ -96,7 +95,7 @@ new_business = {
         'type': 'string',
         'required': True,
         'empty': False,
-        'validator': validate_bsname
+        'validator': validate_field
     },
     "location": {
         'type': 'string',

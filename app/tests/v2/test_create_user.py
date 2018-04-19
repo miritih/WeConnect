@@ -54,7 +54,7 @@ class CreateUserTestCase(unittest.TestCase):
             data=json.dumps(self.user),
             headers={"content-type": 'application/json'}
         )
-        self.assertIn("Sorry!! Username taken!", str(res2.data))
+        self.assertIn("Sorry!! username taken!", str(res2.data))
 
     def test_details_missing(self):
         """test username and password required"""

@@ -61,54 +61,15 @@ def search(filters):
     location = filters["location"]
     page = filters["page"]
     limit = filters['limit']
-
-    if location and category and name:
-        bs = Business.query.filter(
-            Business.location.ilike("%" + location + "%"),
-            Business.category.ilike("%" + category + "%"),
-            Business.name.ilike("%" + name + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    if location and not category and not name:
-        bs = Business.query.filter(
-            Business.location.ilike("%" + location + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    if category and not name and not location:
-        bs = Business.query.filter(
-            Business.category.ilike("%" + category + "%")
-        ).paginate(page, limit, True)
-        return bs
-    if name and not location and not category:
-        bs = Business.query.filter(
-            Business.name.ilike("%" + name + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    if name and category and not location:
-        bs = Business.query.filter(
-            Business.name.ilike("%" + name + "%"),
-            Business.category.ilike("%" + category + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    if name and location and not category:
-        bs = Business.query.filter(
-            Business.name.ilike("%" + name + "%"),
-            Business.location.ilike("%" + location + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    if location and category and not name:
-        bs = Business.query.filter(
-            Business.category.ilike("%" + category + "%"),
-            Business.location.ilike("%" + location + "%")
-        ).paginate(page, limit, True)
-        return bs
-
-    # if no filters then return all businesses
-    all = Business.query.order_by(Business.created_at.desc()).paginate(
-        page, limit, True)
-    return all
+    query = []
+    if name:
+      query.append(Business.name.ilike("%" + name + "%"))
+    if category:
+      query.append(Business.category.ilike("%" + category + "%"))
+    if location:
+       query.append(Business.location.ilike("%" + location + "%"))
+    businesses = Business.query.filter(
+        *query
+    ).paginate(page, limit, True)
+    
+    return businesses

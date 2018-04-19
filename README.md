@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/mwenda-eric/WeConnect.svg?branch=master)](https://travis-ci.org/mwenda-eric/WeConnect)
 [![Coverage Status](https://coveralls.io/repos/github/mwenda-eric/WeConnect/badge.svg?branch=master)](https://coveralls.io/github/mwenda-eric/WeConnect?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/dc485a5ab5ef19ee15af/maintainability)](https://codeclimate.com/github/mwenda-eric/WeConnect/maintainability)
 # WeConnect
 WeConnect provides a platform that brings businesses and individuals together by creating awareness for businesses and giving the users the ability to write reviews about the businesses they have interacted with. 
 

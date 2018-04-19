@@ -23,13 +23,12 @@ def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        if 'access-token' in request.headers:
-            token = request.headers['access-token']
-        if not token:
+        if 'access-token' not in request.headers:
             return jsonify({
                 'message': 'Token is missing, login to get token'
             }), 401
         try:
+            token = request.headers['access-token']
             data = jwt.decode(token, os.getenv("SECRET_KEY"))
             if data['username'] in user_model.user_token:
                 current_user = user_model.users[data['username']]
@@ -50,33 +49,20 @@ def register():
         if not data or not data['username'].strip() or not data["password"]:
             return jsonify({'message': "username or password missing"})
         if not re.match(r'\A[0-9a-zA-Z!@#$%&*]{6,20}\Z', data['password']):
-            return jsonify({
-                "Message": "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
-            }), 406
+            return jsonify({"Message": "Password must be 6-20 Characters"}), 406
         if data['username'].strip() in user_model.users:  # test if username exists
             return jsonify({"message": "Sorry!! Username taken!"})
-
-        hashed_password = generate_password_hash(data['password'],
-                                                 method='sha256')
-        user = user_model.add_user(data['username'].strip(),
-                                   hashed_password,
+        hashed_password = generate_password_hash(data['password'], method='sha256')
+        user = user_model.add_user(data['username'].strip(),hashed_password,
                                    data['first_name'],
-                                   data['last_name']
-                                   )
-        return jsonify({
-            "message": "user created!",
-            "Details": {
-                "id": user['id'],
-                "username": user['username'],
-                "first_name": user['first_name'],
-                "last_name": user['last_name']
-            }
-        }), 201
+                                   data['last_name'])
+        return jsonify({"message": "user created!", "Details": 
+            {"id": user['id'],"username": user['username'],
+                "first_name": user['first_name'],"last_name": user['last_name']
+            }}), 201
     except Exception as e:
         return jsonify({
-            "Error": "Error!, check you are sending correct information"
-        }), 400
-
+            "Error": "Error!, check you are sending correct information"}), 400
 
 @version1.route('auth/login', methods=['POST'])
 def login():

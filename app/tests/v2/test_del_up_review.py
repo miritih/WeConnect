@@ -73,8 +73,7 @@ class AddBusinessTestCase(unittest.TestCase):
     def test_review_not_found(self):
         """test cannot delete or update a review that dos not exist"""
         res = self.client().put(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/1',
+            'api/v2/businesses/reviews/1',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -82,8 +81,7 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res2 = self.client().delete(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/1',
+            'api/v2/businesses/reviews/1',
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -109,36 +107,22 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         review = json.loads(res.data.decode('utf-8'))
         res1 = self.client().put(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/' + str(
-                review['Review']['id']),
+            'api/v2/businesses/reviews/' + str(review['Review']['id']),
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
-        res2 = self.client().delete(
-            'api/v2/businesses/12121212/reviews/' + str(
-                review['Review']['id']),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
         res3 = self.client().delete(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/' + str(
-                review['Review']['id']),
+            'api/v2/businesses/reviews/' + str(review['Review']['id']),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token
             }
         )
-
         # self.assertEqual(res.status_code, 401)
         self.assertIn("Review Updated", str(res1.data))
-        self.assertIn("Business not found", str(res2.data))
         self.assertIn("Review deleted successfully", str(res3.data))
 
     def test_can_only_delete_own_reviews(self):
@@ -174,9 +158,7 @@ class AddBusinessTestCase(unittest.TestCase):
         )
         review = json.loads(res.data.decode('utf-8'))
         res1 = self.client().put(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/' + str(
-                review['Review']['id']),
+            'api/v2/businesses/reviews/' + str(review['Review']['id']),
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
@@ -184,9 +166,7 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         res2 = self.client().delete(
-            'api/v2/businesses/' + str(
-                self.response['Business']['id']) + '/reviews/' + str(
-                review['Review']['id']),
+            'api/v2/businesses/reviews/' + str(review['Review']['id']),
             headers={
                 "content-type": "application/json",
                 "access-token": self.token

@@ -296,34 +296,29 @@ def get_busineses():
 @login_required
 def update_business(current_user, businessId):
     """ Get business id and update business"""
-
-    biz = Business.query.filter_by(id=businessId).first()
-    if not biz:
+    business = Business.query.filter_by(id=businessId).first()
+    if not business:
         return jsonify({"message": "Business not found"})
     data = request.get_json()
-    if data['name'] != biz.name:
-        if Business.query.filter_by(name=data['name']).first():
-            return jsonify({"Error": "Sorry!! Business name taken!"})
-    if biz.bsowner.id == current_user.id:
-        biz.location = data['location'] if data[
-            'location'] else biz.location
-        biz.category = data['category'] if data[
-            'category'] else biz.category
-        biz.name = data['name'] if data['name'] else biz.name
-        biz.bio = data['bio'] if data['bio'] else biz.bio
+    validator = Validator(new_business)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    if business.bsowner.id == current_user.id:
+        business.location = data['location']
+        business.category = data['category']
+        business.name = data['name']
+        business.bio = data['bio']
         db.session.commit()
         return jsonify({
             "message": "business updated!",
             "Details": {
-                "name": biz.name,
-                "location": biz.location,
-                "category": biz.category,
-            }
-        }), 202
-
-    return jsonify({
-        "message": "Sorry! You can only update your business!!"
-    }), 401
+                "name": business.name,
+                "location": business.location,
+                "category": business.category,
+            }}), 202
+    return jsonify({"message": "Sorry! You can only update your business!!"}), 401
 
 
 @version2.route('businesses/<businessId>', methods=['DELETE'])
@@ -356,27 +351,16 @@ def create_review(current_user, businessId):
         return jsonify({"Errors": errors}), 401
     biz = Business.query.filter_by(id=businessId).first()
     if not biz:
-        return jsonify({
-            "message": "Business not found"
-        }), 401
-    review = Review(
-        title=data['title'],
-        body=data['review'],
-        user_id=current_user.id,
-        business_id=biz.id
-    )
+        return jsonify({"message": "Business not found"}), 401
+    review = Review(title=data['title'],body=data['review'],
+                    user_id=current_user.id,business_id=biz.id)
     db.session.add(review)
     db.session.commit()
     return jsonify({
         "message": "Your Review was added",
-        "Review": {
-            'id': review.id,
-            'title': review.title,
-            'body': review.body,
-            'user_id': review.user_id,
-            'business_id': review.business_id
-        }
-    }), 201
+        "Review": {'id': review.id,'title': review.title,'body': review.body,
+                   'user_id': review.user_id,'business_id': review.business_id
+        }}), 201
 
 
 @version2.route('businesses/<businessId>/reviews', methods=['GET'])
@@ -407,56 +391,41 @@ def get_business_reviews(businessId):
     ])
 
 
-@version2.route('businesses/<businessId>/reviews/<reviewId>',
-                methods=['DELETE'])
+@version2.route('businesses/reviews/<reviewId>',methods=['DELETE'])
 @login_required
-def delete_business_reviews(current_user, businessId, reviewId):
+def delete_business_reviews(current_user, reviewId):
     """Delete a business review"""
     review = Review.query.filter_by(id=reviewId).first()
     if not review:
         return jsonify({"Error": "Review does not exist"})
     if current_user.id != review.user_id:
         return jsonify({"Error": "you can only delete your reviews"})
-    biz = Business.query.filter_by(id=businessId).first()
-    if not biz:
-        return jsonify({
-            "message": "Business not found"
-        }), 401
-
     db.session.delete(review)
     db.session.commit()
     return jsonify({"sucess": "Review deleted successfully"})
 
 
-@version2.route('businesses/<businessId>/reviews/<reviewId>', methods=['PUT'])
+@version2.route('businesses/reviews/<reviewId>', methods=['PUT'])
 @login_required
-def update_business_reviews(current_user, businessId, reviewId):
-    """
-    This endpoint will update a review
-    only the review ownner can update the reviewId
-    """
+def update_business_reviews(current_user, reviewId):
+    """This endpoint will update a review only
+    the review ownner can update the reviewId"""
     review = Review.query.filter_by(id=reviewId).first()
     if not review:
         return jsonify({"Error": "Review does not exist"})
     if current_user.id != review.user_id:
         return jsonify({"Error": "you can only Update your reviews"})
     data = request.get_json()
-    biz = Business.query.filter_by(id=businessId).first()
-    if not biz:
-        return jsonify({
-            "message": "Business not found"
-        }), 401
-
-    review.title = data['title'] if data['title'] else review.title
-    review.body = data['review'] if data['review'] else review.title
+    validator = Validator(review_schema)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    review.title = data['title']
+    review.body = data['review']
     db.session.commit()
     return jsonify({
         "message": "Review Updated",
-        "Review": {
-            'id': review.id,
-            'title': review.title,
-            'body': review.body,
-            'business_id': review.rvwbusines.id,
-            'user_id': review.rvwowner.id
-        }
-    })
+        "Review": {'id': review.id,'title': review.title,'body': review.body,
+            'business_id': review.rvwbusines.id,'user_id': review.rvwowner.id
+        }})

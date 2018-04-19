@@ -76,7 +76,7 @@ class CreateUserTestCase(unittest.TestCase):
                     headers={"content-type": 'application/json'})
         self.assertEqual(res.status_code, 406)
         self.assertIn(
-           "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%",
+           "Password must be 6-20 Characters",
             str(res.data)
             )
 

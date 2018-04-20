@@ -112,3 +112,8 @@ class AddBusinessTestCase(unittest.TestCase):
             }
         )
         self.assertIn("Field cannot be empty", str(res.data))
+        
+    # test the home url renders the documentation template
+    def test_documentation_render(self):
+        rv = self.client().get('/')
+        self.assertIn('WeConnect :: API v2', str(rv.data))

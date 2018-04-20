@@ -1,0 +1,416 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "WeConnect provides a platform that brings businesses and individuals together by creating awareness for businesses and giving the users the ability to write reviews about the businesses they have interacted with.",
+    "version" : "2.0",
+    "title" : "WeConnect"
+  },
+  "host" : "weconnect1-api.herokuapp.com",
+  "basePath" : "/api/v2",
+  "schemes" : [ "https", "http" ],
+  "produces" : [ "application/json" ],
+  "paths" : {
+    "/auth/register" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Creates a new user.",
+        "description" : "The auth register endpoint registers new users on weconnect. On success the `response status` will be `201` and message object to confirm user was created",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "user",
+          "description" : "The user to create.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/User"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "User created"
+          },
+          "400" : {
+            "description" : "Wrong information"
+          }
+        }
+      }
+    },
+    "/auth/login" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Log in the user",
+        "description" : "The login end point will authenticate users to use Weconnect Api. The endpoint will acccept two parameters `username` and `password` as a json object. On success the user should get json response with a token key, else the user will get an error message encoded in a jjson object",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "login",
+          "description" : "login user.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Login"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "logged in, Token generated"
+          },
+          "400" : {
+            "description" : "login fields required"
+          }
+        }
+      }
+    },
+    "/auth/reset-password" : {
+      "put" : {
+        "tags" : [ "Users" ],
+        "summary" : "Reset user password",
+        "description" : "The reset user password endpoints allows authenticated users to reset their passwords. This end point requires the user to pass a `access-token` header with the value of the header ask the `auth key` received on login",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "reset_password",
+          "description" : "resets user password.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/reset_password"
+          }
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "authentication token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "password changed"
+          },
+          "401" : {
+            "description" : "password change failed"
+          }
+        }
+      }
+    },
+    "/auth/logout" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Log out the user",
+        "description" : "The endpoint `auth logout` will logout the currectly logged in user",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "an authorization header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Logged out"
+          }
+        }
+      }
+    },
+    "/businesses" : {
+      "get" : {
+        "tags" : [ "Businesses" ],
+        "summary" : "Get all registered businesses",
+        "description" : "This endpoint will return a json object of all registered businesses. Authentication token is required to use this endpoint",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "return all businesses"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Businesses" ],
+        "summary" : "Creates A new business",
+        "description" : "This end poit accepts usiness data in an json objects, creates a business and returns a json response",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "business",
+          "description" : "business name.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Business"
+          }
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "an authorization header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Business created"
+          },
+          "401" : {
+            "description" : "Error occured"
+          }
+        }
+      }
+    },
+    "/businesses/user" : {
+      "get" : {
+        "tags" : [ "Businesses" ],
+        "summary" : "Get all current user businesses",
+        "description" : "This endpoint will return a json object of all registered businesses. Authentication token is required to use this endpoint",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "authentication token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "return all businesses"
+          }
+        }
+      }
+    },
+    "/business/{businessId}" : {
+      "put" : {
+        "tags" : [ "Businesses" ],
+        "summary" : "Updates business information",
+        "description" : "This endpoint acccepts json paremeters. To update a business you must be the user that created the business  the user that created it",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "business data",
+          "description" : "business name.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Business"
+          }
+        }, {
+          "name" : "businessId",
+          "in" : "path",
+          "description" : "Id of business to list reviews for",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "an authorization header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Update business"
+          },
+          "401" : {
+            "description" : "Error occured"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Businesses" ],
+        "summary" : "Delete a business",
+        "description" : "This end point will delete the business. to delete a business you must be",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "businessId",
+          "in" : "path",
+          "description" : "Id of business to list reviews for",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "an authorization header",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
+    "/businesses/{businessId}/reviews" : {
+      "get" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Get business reviews",
+        "description" : "This endpoint will get all review for a business if business exists and the user is looged in",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "businessId",
+          "in" : "path",
+          "description" : "Id of business to list reviews for",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Review a business",
+        "description" : "This endpoint will add a review for a business. if business exists and the user is looged in",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "business",
+          "description" : "business name.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Review"
+          }
+        }, {
+          "name" : "businessId",
+          "in" : "path",
+          "description" : "Id of business to list reviews for",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "authentication token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Reviews" ],
+        "summary" : "Delete a business review",
+        "description" : "this endpoint will delete a review.",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "businessId",
+          "in" : "path",
+          "description" : "Id of business to Delete reviews for",
+          "required" : true,
+          "type" : "integer"
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "authentication token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          },
+          "401" : {
+            "description" : "Business not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Login" : {
+      "type" : "object",
+      "required" : [ "password", "username" ],
+      "properties" : {
+        "username" : {
+          "type" : "string"
+        },
+        "password" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "password" : "password",
+        "username" : "username"
+      }
+    },
+    "Business" : {
+      "type" : "object",
+      "required" : [ "bio", "category", "location", "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "location" : {
+          "type" : "string"
+        },
+        "category" : {
+          "type" : "string"
+        },
+        "bio" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "name" : "name",
+        "bio" : "bio",
+        "location" : "location",
+        "category" : "category"
+      }
+    },
+    "User" : {
+      "type" : "object",
+      "required" : [ "email", "first_name", "last_name", "password", "username" ],
+      "properties" : {
+        "username" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "password" : {
+          "type" : "string"
+        },
+        "first_name" : {
+          "type" : "string"
+        },
+        "last_name" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "password" : "password",
+        "last_name" : "last_name",
+        "first_name" : "first_name",
+        "email" : "email",
+        "username" : "username"
+      }
+    },
+    "Review" : {
+      "type" : "object",
+      "required" : [ "review", "title" ],
+      "properties" : {
+        "title" : {
+          "type" : "string"
+        },
+        "review" : {
+          "type" : "string"
+        }
+      },
+      "example" : {
+        "review" : "review",
+        "title" : "title"
+      }
+    },
+    "reset_password" : {
+      "type" : "object",
+      "required" : [ "old_password", "password" ],
+      "properties" : {
+        "password" : {
+          "type" : "string"
+        },
+        "old_password" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

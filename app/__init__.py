@@ -21,9 +21,11 @@ def create_app(config_name):
     from app.v2.business import version2
     from app.v2.review import review
     from app.v2.auth import auth
+    from app.home import home
     app.register_blueprint(version2, url_prefix="/api/v2/")
     app.register_blueprint(auth, url_prefix="/api/v2/")
     app.register_blueprint(review, url_prefix="/api/v2/")
+    app.register_blueprint(home)
     # initialize extensions
     migrate = Migrate(app, db)
     db.init_app(app)

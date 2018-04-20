@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 from app import create_app
-from app.v1 import business_model, user_model
+from app.v1.v1 import business_model, user_model
 
 
 class ChangePasswordTestCase(unittest.TestCase):

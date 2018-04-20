@@ -5,7 +5,6 @@ from app.models.v2 import User, Business
 All data validation methods will be defined in this file
 """
 
-
 def validate_field(field, value, error):
     """validates if username is alredy taken"""
     value = value.strip().lower()

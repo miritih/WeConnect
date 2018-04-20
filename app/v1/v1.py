@@ -6,7 +6,7 @@ import re
 import uuid
 import datetime
 import os
-from .models.v1 import User, Business, Reviews
+from app.models.v1 import User, Business, Reviews
 
 # create a version 1 blueprint
 version1 = Blueprint('v1', __name__)
@@ -150,7 +150,6 @@ def register_business(current_user):
             "Error": "Error!, check you are sending correct information"
         }), 400
 
-
 @version1.route('businesses/<businessId>', methods=['PUT'])
 @login_required
 def update_business(current_user, businessId):
@@ -161,21 +160,16 @@ def update_business(current_user, businessId):
         biz = business_model.businesses[businessId]
         data = request.get_json()
         if biz['user_id'] == current_user['username']:
-            biz['location'] = data['location'].strip() if data[
-                'location'].strip() else biz['location']
-            biz['category'] = data['category'].strip() if data[
-                'category'].strip() else biz['category']
-            biz['name'] = data['name'].strip() if data[
-                'name'].strip() else biz['name']
-            biz['bio'] = data['bio'].strip() if data[
-                'bio'].strip() else biz['bio']
+            biz['location'] = data['location'].strip()
+            biz['category'] = data['category'].strip()
+            biz['name'] = data['name'].strip()
+            biz['bio'] = data['bio'].strip()
             return jsonify({
                 "message": "business updated!",
                 "business": biz
             }), 202
         return jsonify({
-            "message": "Sorry! You can only update your business!!"
-        }), 401
+            "message": "Sorry! You can only update your business!!"}), 401
     except Exception as e:
         return jsonify({
             "Error": "Error!, check you are sending correct information"
@@ -238,7 +232,6 @@ def create_review(current_user, businessId):
         return jsonify({
             "Error": "Error!, check you are sending correct information"
         }), 400
-
 
 @version1.route('businesses/<businessId>/reviews', methods=['GET'])
 def get_business_reviews(businessId):

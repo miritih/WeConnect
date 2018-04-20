@@ -1,12 +1,21 @@
-from instance.validations import (validate_field,
-                                  validate_email,
-                                  username_taken,
-                                  validate_password,
-                                  )
 """
 This files stores all validation schema for all POST and PUT json data
 It's what will be used  to validate user data
 """
+
+from flask import Blueprint, jsonify, request   
+from utils.validations import (validate_field,
+                                  validate_email,
+                                  username_taken,
+                                  validate_password,
+                                  )
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+import os
+import jwt
+import datetime
+from app.models.v2 import User
+
 # register user schema. will validate new user data
 reg_user_schema = {
     'username': {
@@ -125,3 +134,30 @@ review_schema = {
         'empty': False
     }
 }
+
+def login_required(f):
+    """
+    login decorator function
+    it checks the authentication token verify if its valid,
+    then return the aunthenticated user
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'access-token' not in request.headers:
+            return jsonify({
+                'message': 'Token is missing, login to get token'
+            }), 401
+        try:
+            token = request.headers['access-token']
+            data = jwt.decode(token, os.getenv("SECRET_KEY"))
+            current_user = User.query.filter_by(
+                username=data['username'],
+                logged_in=True
+            ).first()
+            if not current_user:
+                return jsonify({"message": "You are not logged in"}), 401
+        except Exception as e:
+            return jsonify({'message': 'Token is invalid or Expired!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated

@@ -66,7 +66,7 @@ class LogoutUserTestCase(unittest.TestCase):
 
     def test_invalid_token(self):
         """Test cannot accept invalid token"""
-        logout = self.client().post(
+        logout = self.client().post( 
             '/api/v2/auth/logout',
             data={},
             headers={

@@ -91,6 +91,37 @@
         }
       }
     },
+    "/auth/update-profile" : {
+      "put" : {
+        "tags" : [ "Users" ],
+        "summary" : "Updates user profile",
+        "description" : "The reset update profile endpoint allows authenticated users to update their profile information. This end point requires the user to pass a `access-token` header",
+        "consumes" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "update_profile",
+          "description" : "Required field for update profile endpoint.",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/update_profile"
+          }
+        }, {
+          "name" : "access-token",
+          "in" : "header",
+          "description" : "authentication token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Profile updated"
+          },
+          "401" : {
+            "description" : "profile update failed"
+          }
+        }
+      }
+    },
     "/auth/logout" : {
       "post" : {
         "tags" : [ "Users" ],
@@ -408,6 +439,27 @@
           "type" : "string"
         },
         "old_password" : {
+          "type" : "string"
+        }
+      }
+    },
+    "update_profile" : {
+      "type" : "object",
+      "required" : [ "email", "first_name", "image", "last_name", "username" ],
+      "properties" : {
+        "username" : {
+          "type" : "string"
+        },
+        "first_name" : {
+          "type" : "string"
+        },
+        "last_name" : {
+          "type" : "string"
+        },
+        "email" : {
+          "type" : "string"
+        },
+        "image" : {
           "type" : "string"
         }
       }

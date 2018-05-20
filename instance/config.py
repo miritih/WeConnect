@@ -4,7 +4,9 @@ import os
 class Config(object):
     """docstring for Config"""
     DEBUG = False
-    SECRET = os.getenv('SECRET_KEY')
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class Development(Config):
@@ -16,12 +18,13 @@ class Testing(Config):
     """docstring for Testing"""
     DEBUG = True
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = "postgres:///weconnect_test"
 
 
 class Production(Config):
     """"""
     DEBUG = False
-    TESTING = False
+
 
 app_config = {
     'development': Development,

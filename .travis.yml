@@ -5,8 +5,18 @@ python:
 install:
   - pip3 install -r requirements.txt
   - pip3 install coveralls
+services:
+  - postgresql
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+  - psql -c 'create database weconnect_test;' -U postgres
+  - flask db upgrade
 # command to run tests
 script:
-  - nosetests --with-coverage  # or py.test for Python versions 3.5 and below
+  - nosetests --with-coverage --cover-package=app  # or py.test for Python versions 3.5 and below
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 after_success:
   - coveralls

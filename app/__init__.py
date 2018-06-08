@@ -5,9 +5,11 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from app.v1.v1 import version1
+from flask_mail import Mail
 
 
 db = SQLAlchemy()
+mail = Mail()
 def page_not_found(e):
   return render_template('404.html'), 404
 
@@ -31,6 +33,7 @@ def create_app(config_name):
     # initialize extensions
     migrate = Migrate(app, db)
     db.init_app(app)
+    mail.init_app(app)
     return app
 
 import app.models.v2

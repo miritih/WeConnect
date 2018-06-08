@@ -1,12 +1,15 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, url_for, render_template, request
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import jwt
+import string
+import random
 import datetime
+from flask_mail import Message
 from utils.json_schema import (reg_user_schema,login_schema,reset_pass,
-                                  update_user_schema, login_required)
+                                update_user_schema, login_required,forgot_pass)
 from app.models.v2 import User
-from app import create_app, db
+from app import create_app, db, mail
 from cerberus import Validator
 
 # create a version 1 blueprint
@@ -122,3 +125,30 @@ def update_profile(current_user):
         "first_name": current_user.first_name,"last_name": current_user.last_name
         }}), 201
 
+@auth.route('auth/forgot-password', methods=['PUT'])
+def forgot_password():
+    """Sends a new password to a registred email."""
+    data = request.get_json()
+    validator = Validator(forgot_pass)
+    validator.validate(data)
+    errors = validator.errors
+    if errors:
+        return jsonify({"Errors": errors}), 401
+    user = User.query.filter_by(email=data['email']).first()
+    password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    user.password = generate_password_hash(password, method='sha256')
+    db.session.commit()
+    msg = Message("Password reset",
+                  sender="noreply@andela.com",
+                  recipients=[user.email])
+    link = url_for('auth.login')
+    msg.html = render_template('/mails/forgot_password.html', username=user.username, password=password,link=link)
+    try:
+        mail.send(msg)
+        return jsonify({"Sucess":"New password sent to your email"})
+    except Exception as e:
+        return jsonify({"Error":"Opp! an error occured, email was not sent"}),401
+    
+
+
+    

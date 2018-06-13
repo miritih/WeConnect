@@ -61,7 +61,7 @@ def login():
                 "first_name": user.first_name}
             token = jwt.encode({
                 'username': user.username, 'user':user_data,
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(
+                'exp':datetime.datetime.utcnow() + datetime.timedelta(
                     minutes=120)},os.getenv("SECRET_KEY"))
             user.logged_in = True
             db.session.commit()
@@ -133,7 +133,7 @@ def forgot_password():
     validator.validate(data)
     errors = validator.errors
     if errors:
-        return jsonify({"Errors": errors}), 401
+        return jsonify({"Errors": errors}), 422
     user = User.query.filter_by(email=data['email']).first()
     password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
     user.password = generate_password_hash(password, method='sha256')
@@ -142,7 +142,7 @@ def forgot_password():
                   sender="noreply@andela.com",
                   recipients=[user.email])
     link = url_for('auth.login')
-    msg.html = render_template('/mails/forgot_password.html', username=user.username, password=password,link=link)
+    msg.html = render_template('/mails/forgot_password.html', username=user.username, password=password,email=user.email)
     try:
         mail.send(msg)
         return jsonify({"Sucess":"New password sent to your email"})

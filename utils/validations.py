@@ -11,6 +11,8 @@ def validate_field(field, value, error):
     tables={"username":User, "name":Business}
     queries={}
     if field == "username":
+        if value.isnumeric():
+            error(field, "Username cannot contain only numbers")
         queries[field] = [User.username.ilike(value)]
     else:
         queries[field] = [Business.name.ilike(value)]

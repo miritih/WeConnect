@@ -31,7 +31,7 @@ class AddBusinessTestCase(unittest.TestCase):
             "name": "Safaricom",
             "location": "Nairobi,Kenya",
             "category": "Telecommunication",
-            "bio": "The better option"
+            "description": "The better option"
         }
         self.review = {
             "review": "Awesome Awesome Awesome ",

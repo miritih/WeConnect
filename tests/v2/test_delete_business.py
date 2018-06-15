@@ -30,7 +30,7 @@ class DeleteBusinessTestCase(unittest.TestCase):
             "name": "Andela",
             "location": "Nairobi,Kenya",
             "category": "Tech",
-            "bio": "Epic"
+            "description": "Epic"
         }
         self.client().post(
             '/api/v2/auth/register',

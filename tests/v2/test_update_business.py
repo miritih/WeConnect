@@ -31,13 +31,13 @@ class CreateUserTestCase(unittest.TestCase):
             "name": "Safaricom",
             "location": "Nairobi,Kenya",
             "category": "Telecommunication",
-            "bio": "The better option"
+            "description": "The better option"
         }
         self.update_business = {
             "name": "mwenda inc",
             "location": "Mombasa",
             "category": "Tech",
-            "bio": "Yes it's a tech compony"
+            "description": "Yes it's a tech compony"
         }
         self.client().post(
             '/api/v2/auth/register',

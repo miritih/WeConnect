@@ -28,14 +28,14 @@ def register_business(current_user):
         name=data['name'].strip().lower(),
         location=data['location'],
         category=data['category'],
-        bio=data['bio'],
+        description=data['description'],
         user_id=current_user.id
     )
     db.session.add(new_biz)
     db.session.commit()
     return jsonify({
         "message": "Business created", "Business": {'update_at': new_biz.updated_at,
-            "category": new_biz.category,'bio': new_biz.bio,
+            "category": new_biz.category,'description': new_biz.description,
             "name": new_biz.name,"location": new_biz.location,
             'user_id': new_biz.bsowner.id,'created_at': new_biz.created_at,
             "id": new_biz.id}}), 201
@@ -48,7 +48,7 @@ def get_business(business_id):
     if business:
         return jsonify({'id': business.id, 'user_id': business.bsowner.id, 
             'created_at': business.created_at,'name': business.name,
-            'location': business.location, 'bio': business.bio,
+            'location': business.location, 'description': business.description,
             'category': business.category,'update_at': business.updated_at
         })
     return jsonify({"message": "Business not found"}), 401
@@ -67,7 +67,7 @@ def get_user_businesses(current_user):
         "Results":[{'category': business.category,'created_at': business.created_at,
             'name': business.name, 'location': business.location,
             'id': business.id,'category': business.category,
-            'bio': business.bio,'user_id': business.bsowner.id,
+            'description': business.description,'user_id': business.bsowner.id,
             'update_at': business.updated_at
         } for business in all],
         "per_page": results.per_page,"page": results.page,
@@ -97,7 +97,7 @@ def get_busineses():
         "objects":[{'id': business.id,'name': business.name,
             'user_id': business.bsowner.id,'created_at': business.created_at,
             'location': business.location,'category': business.category,
-            'bio': business.bio,'update_at': business.updated_at
+            'description': business.description,'update_at': business.updated_at
         } for business in all
         ]})
 
@@ -119,7 +119,7 @@ def update_business(current_user, businessId):
         business.location = data['location']
         business.category = data['category']
         business.name = data['name']
-        business.bio = data['bio']
+        business.description = data['description']
         db.session.commit()
         return jsonify({
             "message": "business updated!",

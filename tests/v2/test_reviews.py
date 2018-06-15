@@ -31,7 +31,7 @@ class AddBusinessTestCase(unittest.TestCase):
             "name": "Andela",
             "location": "Nairobi,Kenya",
             "category": "Telecommunication",
-            "bio": "The better option"
+            "description": "The better option"
         }
         self.review = {
             "review": "Awesome Awesome Awesome ",
@@ -108,7 +108,7 @@ class AddBusinessTestCase(unittest.TestCase):
                 "name": "Andela Kenya",
                 "location": "Nairobi,Kenya",
                 "category": "Telecommunication",
-                "bio": "The better option"
+                "description": "The better option"
             }),
             headers={
                 "content-type": "application/json",

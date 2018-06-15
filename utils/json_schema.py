@@ -117,7 +117,7 @@ new_business = {
         'required': True,
         'empty': False
     },
-    "bio": {
+    "description": {
         'type': 'string',
         'required': True,
         'empty': False

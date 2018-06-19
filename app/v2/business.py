@@ -81,18 +81,18 @@ def get_busineses():
     # set all serch parameters.
     vars = {
         'page': request.args.get('page', 1, type=int),
-        'limit': request.args.get('limit', 10, type=int),
+        'name': request.args.get('q', None, type=str),
         'location': request.args.get('location', default=None, type=str),
         'category': request.args.get('category', None, type=str),
-        'name': request.args.get('q', None, type=str)
+        'limit': request.args.get('limit', 10, type=int)
     }
     # get paginated list of businesses.
     results = search(vars)
     all = results.items
     return jsonify({
+        "page": results.page,
         "total_results": results.total,
         "total_pages": results.pages,
-        "page": results.page,
         "per_page": results.per_page,
         "objects":[{'id': business.id,'name': business.name,
             'user_id': business.bsowner.id,'created_at': business.created_at,
@@ -101,6 +101,30 @@ def get_busineses():
         } for business in all
         ]})
 
+@version2.route('businesses/search', methods=['GET'])
+def search_busineses():
+    """search for business using name location or category"""
+    # set all serch parameters.
+    search_vars = {
+        'name': request.args.get('q', None, type=str),
+        'location': request.args.get('location', default=None, type=str),
+        'category': request.args.get('category', None, type=str),
+        'page': request.args.get('page', 1, type=int),
+        'limit': request.args.get('limit', 10, type=int)
+    }
+    # get paginated list of businesses.
+    results = search(search_vars)
+    all_paginated = results.items
+    return jsonify({
+        "total_results": results.total,
+        "total_pages": results.pages,
+        "page": results.page,
+        "per_page": results.per_page,
+        "businesses":[{'id': business.id,'name': business.name,
+            'user_id': business.bsowner.id,'created_at': business.created_at,
+            'location': business.location,'category': business.category,
+            'description': business.description,'update_at': business.updated_at
+        } for business in all_paginated]})
 
 @version2.route('businesses/<businessId>', methods=['PUT'])
 @login_required

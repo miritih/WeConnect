@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template
+from flask import Flask, Blueprint, render_template, jsonify
 import os
 from instance.config import app_config
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +11,9 @@ from flask_mail import Mail
 db = SQLAlchemy()
 mail = Mail()
 def page_not_found(e):
-  return render_template('404.html'), 404
+  return jsonify({
+    "Error": "The page you are trying to access was not found."
+  }), 404
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)

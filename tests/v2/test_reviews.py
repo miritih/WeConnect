@@ -21,9 +21,20 @@ class AddBusinessTestCase(unittest.TestCase):
             "first_name": "eric",
             "last_name": "Miriti"
         }
+        self.user2 = {
+            "username": "miriti",
+            "email": "miriti@gmail.com",
+            "password": "qwerty123!@#",
+            "first_name": "eric",
+            "last_name": "Miriti"
+        }
 
         self.logins = {
             "username": "mwenda",
+            "password": "qwerty123!@#"
+        }
+        self.logins2 = {
+            "username": "miriti",
             "password": "qwerty123!@#"
         }
 
@@ -43,17 +54,28 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.user),
             content_type='application/json'
         )
+        self.client().post(
+            '/api/v2/auth/register',
+            data=json.dumps(self.user2),
+            content_type='application/json'
+        )
 
         self.login = self.client().post(
             '/api/v2/auth/login',
             data=json.dumps(self.logins),
             content_type='application/json'
         )
+        self.login2 = self.client().post(
+            '/api/v2/auth/login',
+            data=json.dumps(self.logins2),
+            content_type='application/json'
+        )
 
         self.data = json.loads(self.login.data.decode("utf-8"))
-
+        self.data2 = json.loads(self.login2.data.decode("utf-8"))
         # get the token to be used by tests
         self.token = self.data['auth_token']
+        self.token2 = self.data2['auth_token']
 
     def tearDown(self):
         """ clear data after every test"""
@@ -76,7 +98,7 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
-                "access-token": self.token
+                "access-token": self.token2
             }
         )
         self.client().post(
@@ -85,7 +107,7 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
-                "access-token": self.token
+                "access-token": self.token2
             }
         )
         res = self.client().get(
@@ -93,7 +115,7 @@ class AddBusinessTestCase(unittest.TestCase):
                 response['Business']['id']) + '/reviews',
             headers={
                 "content-type": "application/json",
-                "access-token": self.token
+                "access-token": self.token2
             }
         )
         self.assertEqual(res.status_code, 200)

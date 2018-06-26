@@ -26,15 +26,17 @@ def create_review(current_user, businessId):
     biz = Business.query.filter_by(id=businessId).first()
     if not biz:
         return jsonify({"message": "Business not found"}), 401
-    review = Review(title=data['title'],body=data['review'],
-                    user_id=current_user.id,business_id=biz.id)
+    if biz.bsowner == current_user:
+        return jsonify({"Error": "Sorry!, You cannot review your own business"}), 401
+    review = Review(title=data['title'], body=data['review'],
+                    user_id=current_user.id, business_id=biz.id)
     db.session.add(review)
     db.session.commit()
     return jsonify({
         "message": "Your Review was added",
-        "Review": {'id': review.id,'title': review.title,'body': review.body,
-                   'user_id': review.user_id,'business_id': review.business_id
-        }}), 201
+        "Review": {'id': review.id, 'title': review.title, 'body': review.body,
+                   'user_id': review.user_id, 'business_id': review.business_id
+                   }}), 201
 
 
 @review.route('businesses/<businessId>/reviews', methods=['GET'])
@@ -56,20 +58,7 @@ def get_business_reviews(businessId):
     return jsonify([{
         'id': review.id, 'title': review.title, 'body': review.body,
         'business_id': review.rvwbusines.id, 'user_id': review.rvwowner.id
-      }for review in reviews])
-
-@review.route('businesses/reviews/<reviewId>',methods=['DELETE'])
-@login_required
-def delete_business_reviews(current_user, reviewId):
-    """Delete a business review"""
-    review = Review.query.filter_by(id=reviewId).first()
-    if not review:
-        return jsonify({"Error": "Review does not exist"})
-    if current_user.id != review.user_id:
-        return jsonify({"Error": "you can only delete your reviews"})
-    db.session.delete(review)
-    db.session.commit()
-    return jsonify({"sucess": "Review deleted successfully"})
+    }for review in reviews])
 
 
 @review.route('businesses/reviews/<reviewId>', methods=['PUT'])
@@ -93,6 +82,6 @@ def update_business_reviews(current_user, reviewId):
     db.session.commit()
     return jsonify({
         "message": "Review Updated",
-        "Review": {'id': review.id,'title': review.title,'body': review.body,
-            'business_id': review.rvwbusines.id,'user_id': review.rvwowner.id
-        }})
+        "Review": {'id': review.id, 'title': review.title, 'body': review.body,
+                   'business_id': review.rvwbusines.id, 'user_id': review.rvwowner.id
+                   }})

@@ -6,8 +6,8 @@ import string
 import random
 import datetime
 from flask_mail import Message
-from utils.json_schema import (reg_user_schema,login_schema,reset_pass,
-                                update_user_schema, login_required,forgot_pass)
+from utils.json_schema import (reg_user_schema, login_schema, reset_pass,
+                               update_user_schema, login_required, forgot_pass)
 from app.models.v2 import User
 from app import create_app, db, mail
 from cerberus import Validator
@@ -32,15 +32,16 @@ def register():
     username = data['username'].strip().lower()
     hashed_password = generate_password_hash(data['password'], method='sha256')
     new_user = User(username=username, email=data['email'],
-                    password=hashed_password,first_name=data['first_name'],
+                    password=hashed_password, first_name=data['first_name'],
                     last_name=data['last_name'])
     db.session.add(new_user)
     db.session.commit()
     return jsonify({
         "Details": {"first_name": new_user.first_name,
-            "username": new_user.username, "last_name": new_user.last_name,
-            "email": new_user.email},
-            "Success": "user created!"}), 201
+                    "username": new_user.username, "last_name": new_user.last_name,
+                    "email": new_user.email},
+        "Success": "user created!"}), 201
+
 
 @auth.route('auth/login', methods=['POST'])
 def login():
@@ -55,14 +56,14 @@ def login():
         username = auth['username'].strip().lower()
         user = User.query.filter_by(username=username).first()
         if check_password_hash(user.password, auth['password']):
-            user_data= {
+            user_data = {
                 "username": user.username, "email": user.email,
                 "last_name": user.last_name, "image": user.image,
                 "first_name": user.first_name}
             token = jwt.encode({
-                'username': user.username, 'user':user_data,
-                'exp':datetime.datetime.utcnow() + datetime.timedelta(
-                    minutes=120)},os.getenv("SECRET_KEY"))
+                'username': user.username, 'user': user_data,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(
+                    minutes=120)}, os.getenv("SECRET_KEY"))
             user.logged_in = True
             db.session.commit()
             return jsonify({"auth_token": token.decode('UTF-8')}), 200
@@ -97,8 +98,8 @@ def reset_password(current_user):
         current_user.password = hashed_password
         db.session.commit()
         return jsonify({"message": "password updated"})
-    eror={
-      'old_password': "Wrong old Password"
+    eror = {
+        'old_password': "Wrong old Password"
     }
     return jsonify({"Errors": eror}), 406
 
@@ -121,9 +122,10 @@ def update_profile(current_user):
     db.session.commit()
     return jsonify({
         "Success": "user updated!",
-        "Details": {"email": current_user.email,"username": current_user.username,
-        "first_name": current_user.first_name,"last_name": current_user.last_name
-        }}), 201
+        "Details": {"email": current_user.email, "username": current_user.username,
+                    "first_name": current_user.first_name, "last_name": current_user.last_name
+                    }}), 201
+
 
 @auth.route('auth/forgot-password', methods=['PUT'])
 def forgot_password():
@@ -135,20 +137,18 @@ def forgot_password():
     if errors:
         return jsonify({"Errors": errors}), 422
     user = User.query.filter_by(email=data['email']).first()
-    password = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+    password = ''.join(random.choices(
+        string.ascii_uppercase + string.digits, k=10))
     user.password = generate_password_hash(password, method='sha256')
     db.session.commit()
     msg = Message("Password reset",
                   sender="noreply@andela.com",
                   recipients=[user.email])
     link = url_for('auth.login')
-    msg.html = render_template('/mails/forgot_password.html', username=user.username, password=password,email=user.email)
+    msg.html = render_template('/mails/forgot_password.html',
+                               username=user.username, password=password, email=user.email)
     try:
         mail.send(msg)
-        return jsonify({"Sucess":"New password sent to your email"})
+        return jsonify({"Sucess": "New password sent to your email"})
     except Exception as e:
-        return jsonify({"Error":"Opp! an error occured, email was not sent"}),401
-    
-
-
-    
+        return jsonify({"Error": "Opp! an error occured, email was not sent"}), 401

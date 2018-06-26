@@ -21,12 +21,22 @@ class AddBusinessTestCase(unittest.TestCase):
             "first_name": "eric",
             "last_name": "Miriti"
         }
+        self.user2 = {
+            "username": "miriti",
+            "email": "miriti@gmail.com",
+            "password": "qwerty123!@#",
+            "first_name": "eric",
+            "last_name": "Miriti"
+        }
 
         self.logins = {
             "username": "mwenda",
             "password": "qwerty123!@#"
         }
-
+        self.logins2 = {
+            "username": "miriti",
+            "password": "qwerty123!@#"
+        }
         self.business = {
             "name": "Safaricom",
             "location": "Nairobi,Kenya",
@@ -43,17 +53,28 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.user),
             content_type='application/json'
         )
-
+        self.client().post(
+            '/api/v2/auth/register',
+            data=json.dumps(self.user2),
+            content_type='application/json'
+        )
         self.login = self.client().post(
             '/api/v2/auth/login',
             data=json.dumps(self.logins),
             content_type='application/json'
         )
+        self.login2 = self.client().post(
+            '/api/v2/auth/login',
+            data=json.dumps(self.logins2),
+            content_type='application/json'
+        )
 
         self.data = json.loads(self.login.data.decode("utf-8"))
+        self.data2 = json.loads(self.login2.data.decode("utf-8"))
 
         # get the token to be used by tests
         self.token = self.data['auth_token']
+        self.token2 = self.data2['auth_token']
         # register business for reviews
         bus = self.client().post(
             '/api/v2/businesses',
@@ -80,18 +101,9 @@ class AddBusinessTestCase(unittest.TestCase):
                 "access-token": self.token
             }
         )
-        res2 = self.client().delete(
-            'api/v2/businesses/reviews/1',
-            data=json.dumps(self.review),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
         self.assertIn("Review does not exist", str(res.data))
-        self.assertIn("Review does not exist", str(res2.data))
 
-    def test_can_delete_review(self):
+    def test_can_update_review(self):
         """
         Test that reviews can
         be deleted and updated
@@ -102,7 +114,7 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
-                "access-token": self.token
+                "access-token": self.token2
             }
         )
         review = json.loads(res.data.decode('utf-8'))
@@ -111,21 +123,14 @@ class AddBusinessTestCase(unittest.TestCase):
             data=json.dumps(self.review),
             headers={
                 "content-type": "application/json",
-                "access-token": self.token
+                "access-token": self.token2
             }
         )
-        res3 = self.client().delete(
-            'api/v2/businesses/reviews/' + str(review['Review']['id']),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
+
         # self.assertEqual(res.status_code, 401)
         self.assertIn("Review Updated", str(res1.data))
-        self.assertIn("Review deleted successfully", str(res3.data))
 
-    def test_can_only_delete_own_reviews(self):
+    def test_can_only_update_own_reviews(self):
         """Tests that users cannot delete other users reviews"""
         self.client().post(
             '/api/v2/auth/register',
@@ -165,12 +170,4 @@ class AddBusinessTestCase(unittest.TestCase):
                 "access-token": self.token
             }
         )
-        res2 = self.client().delete(
-            'api/v2/businesses/reviews/' + str(review['Review']['id']),
-            headers={
-                "content-type": "application/json",
-                "access-token": self.token
-            }
-        )
         self.assertIn("you can only Update your reviews", str(res1.data))
-        self.assertIn("you can only delete your reviews", str(res2.data))

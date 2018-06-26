@@ -52,6 +52,7 @@ update_user_schema = {
     'username': {
         'type': 'string',
         'required': True,
+        'empty': False
     },
     'email': {
         'type': 'string',
@@ -106,6 +107,28 @@ new_business = {
         'required': True,
         'empty': False,
         'validator': validate_field
+    },
+    "location": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "category": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "description": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    }
+}
+business_update = {
+    "name": {
+        'type': 'string',
+        'required': True,
+        'empty': False
     },
     "location": {
         'type': 'string',

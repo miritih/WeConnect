@@ -1,4 +1,5 @@
 alembic==0.9.8
+blinker==1.4
 Cerberus==1.1
 certifi==2018.1.18
 chardet==3.0.4
@@ -11,6 +12,7 @@ docopt==0.6.2
 Flask==0.12.2
 Flask-Cors==3.0.3
 Flask-Login==0.4.1
+Flask-Mail==0.9.1
 Flask-Migrate==2.1.1
 Flask-SQLAlchemy==2.3.2
 gunicorn==19.7.1

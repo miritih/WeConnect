@@ -8,6 +8,7 @@ from utils.validations import (validate_field,
                                   validate_email,
                                   username_taken,
                                   validate_password,
+                                  forgot_password,
                                   )
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
@@ -51,6 +52,7 @@ update_user_schema = {
     'username': {
         'type': 'string',
         'required': True,
+        'empty': False
     },
     'email': {
         'type': 'string',
@@ -116,7 +118,29 @@ new_business = {
         'required': True,
         'empty': False
     },
-    "bio": {
+    "description": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    }
+}
+business_update = {
+    "name": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "location": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "category": {
+        'type': 'string',
+        'required': True,
+        'empty': False
+    },
+    "description": {
         'type': 'string',
         'required': True,
         'empty': False
@@ -134,7 +158,14 @@ review_schema = {
         'empty': False
     }
 }
-
+forgot_pass ={
+    'email': {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+        'validator': forgot_password
+    },
+}
 def login_required(f):
     """
     login decorator function

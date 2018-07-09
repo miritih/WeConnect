@@ -1,14 +1,19 @@
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, render_template, jsonify
 import os
 from instance.config import app_config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
 from app.v1.v1 import version1
+from flask_mail import Mail
 
 
 db = SQLAlchemy()
-
+mail = Mail()
+def page_not_found(e):
+  return jsonify({
+    "Error": "The page you are trying to access was not found."
+  }), 404
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=True)
@@ -26,9 +31,11 @@ def create_app(config_name):
     app.register_blueprint(auth, url_prefix="/api/v2/")
     app.register_blueprint(review, url_prefix="/api/v2/")
     app.register_blueprint(home)
+    app.register_error_handler(404, page_not_found)
     # initialize extensions
     migrate = Migrate(app, db)
     db.init_app(app)
+    mail.init_app(app)
     return app
 
 import app.models.v2

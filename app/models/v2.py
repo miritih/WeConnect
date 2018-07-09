@@ -44,7 +44,7 @@ class Business(TimestampMixin, db.Model):
     name = db.Column(db.String(255))
     location = db.Column(db.String(255))
     category = db.Column(db.String(255))
-    bio = db.Column(db.String(255))
+    description = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     reviews = db.relationship(
         'Review',

@@ -11,6 +11,8 @@ def validate_field(field, value, error):
     tables={"username":User, "name":Business}
     queries={}
     if field == "username":
+        if value.isnumeric():
+            error(field, "Username cannot contain only numbers")
         queries[field] = [User.username.ilike(value)]
     else:
         queries[field] = [Business.name.ilike(value)]
@@ -44,6 +46,13 @@ def validate_password(field, value, error):
             field,
             "Password must be 6-20 Characters and can only contains leters,numbers,and any of !@#$%"
         )
+def forgot_password(field, value, error):
+    """ checks if actauly the email is registered before sending a new password"""
+    if not User.query.filter_by(email=value).first():
+        error(field, "Email does not exist!")
+    if not re.match(
+            r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,4}$', value):
+        error(field, "Invalid Email")
 
 def search(filters):
     """

@@ -3,13 +3,13 @@ This files stores all validation schema for all POST and PUT json data
 It's what will be used  to validate user data
 """
 
-from flask import Blueprint, jsonify, request   
+from flask import Blueprint, jsonify, request
 from utils.validations import (validate_field,
-                                  validate_email,
-                                  username_taken,
-                                  validate_password,
-                                  forgot_password,
-                                  )
+                               validate_email,
+                               username_taken,
+                               validate_password,
+                               forgot_password,
+                               )
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import os
@@ -47,13 +47,8 @@ reg_user_schema = {
         'empty': False,
     }
 }
-#update user schema
+# update user schema
 update_user_schema = {
-    'username': {
-        'type': 'string',
-        'required': True,
-        'empty': False
-    },
     'email': {
         'type': 'string',
         'required': True,
@@ -158,7 +153,7 @@ review_schema = {
         'empty': False
     }
 }
-forgot_pass ={
+forgot_pass = {
     'email': {
         'type': 'string',
         'required': True,
@@ -166,6 +161,8 @@ forgot_pass ={
         'validator': forgot_password
     },
 }
+
+
 def login_required(f):
     """
     login decorator function

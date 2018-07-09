@@ -114,7 +114,10 @@ def update_profile(current_user):
     errors = validator.errors
     if errors:
         return jsonify({"Errors": errors}), 401
-    current_user.username = data['username']
+    duplicate = User.query.filter(
+        User.email.ilike(data['email'])).first()
+    if duplicate and duplicate.email != current_user.email:
+        return jsonify({"Error": "Email taken"})
     current_user.email = data['email'],
     current_user.first_name = data['first_name'],
     current_user.last_name = data['last_name']

@@ -26,11 +26,10 @@ class UpdateUserTestCase(unittest.TestCase):
             "password": "qwerty123!@#"
         }
         self.updateUser = {
-            "username": "mwenda",
             "email": "ericmwenda5@gmail.com",
             "first_name": "kaibi",
             "last_name": "Miriti",
-            "image":"avatar_2x.png"
+            "image": "avatar_2x.png"
         }
         self.client().post(
             '/api/v2/auth/register',
@@ -66,9 +65,8 @@ class UpdateUserTestCase(unittest.TestCase):
         reset = self.client().put(
             '/api/v2/auth/update-profile',
             data=json.dumps({
-              "username": "mwenda",
-              "email": "ericmwenda5@gmail.com",
-              "first_name": "kaibi"
+                "email": "ericmwenda5@gmail.com",
+                "first_name": "kaibi"
             }),
             headers={
                 "content-type": "application/json",

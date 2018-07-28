@@ -1,5 +1,6 @@
 import re
 from app.models.v2 import User, Business
+from sqlalchemy import or_
 
 """
 All data validation methods will be defined in this file
@@ -62,16 +63,17 @@ def search(filters):
     category = filters["category"]
     name = filters["name"]
     location = filters["location"]
-    page = filters["page"]
+    page = filters["page"]  
     limit = filters['limit']
     query = []
     if name:
       query.append(Business.name.ilike("%" + name + "%"))
+      query.append(Business.category.ilike("%" + name + "%"))
+      query.append(Business.location.ilike("%" + name + "%"))
     if category:
       query.append(Business.category.ilike("%" + category + "%"))
     if location:
        query.append(Business.location.ilike("%" + location + "%"))
-       
-    businesses = Business.query.filter(*query).paginate(page, limit, True)
+    businesses = Business.query.filter(or_(*query)).paginate(page, limit, True)
     
     return businesses

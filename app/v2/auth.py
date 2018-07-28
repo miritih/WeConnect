@@ -155,3 +155,13 @@ def forgot_password():
         return jsonify({"Sucess": "New password sent to your email"})
     except Exception as e:
         return jsonify({"Error": "Opp! an error occured, email was not sent"}), 401
+@auth.route('auth/get-user', methods=['GET'])
+@login_required
+def get_user(current_user):
+    return jsonify({ 
+        "username": current_user.username,
+        "email": current_user.email,
+        "last_name": current_user.last_name,
+        "first_name": current_user.first_name,
+        "image":current_user.image
+    })

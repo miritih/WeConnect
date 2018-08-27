@@ -21,9 +21,9 @@ class AddBusinessTestCase(unittest.TestCase):
         self.logins = {"username": "miriti", "password": "qwerty123!@#"}
 
         self.business = {"name": "Safaricom", "location": "Nairobi,Kenya",
-                         "category": "Telecommunication", "bio": "Epic"}
+                         "category": "Telecommunication","logo":"logo", "bio": "Epic"}
         self.empy_business = {"name": "", "location": "",
-                              "category": "", "bio": ""}
+                              "category": "", "logo":"logo","bio": ""}
         self.client().post('/api/v1/auth/register', data=json.dumps(self.user),
                            content_type='application/json')
 

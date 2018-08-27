@@ -48,17 +48,22 @@ def get_business_reviews(businessId):
     page = request.args.get('page', 1, type=int)
     limit = request.args.get('limit', 10, type=int)
     # get paginated list of businesses. default is page 1
-    reviews = Review.query.filter_by(
+    all_reviews = Review.query.filter_by(
         business_id=businessId).order_by(Review.created_at.desc()).paginate(
-        page, limit, False).items
-
+        page, limit, False)
+    reviews = all_reviews.items
     if not reviews:
-        return jsonify({"message": "No Reviews for this business"})
+        return jsonify({"message": "No Reviews for this business"}), 401
 
-    return jsonify([{
+    return jsonify({'reviews':[{
         'id': review.id, 'title': review.title, 'body': review.body,
         'business_id': review.rvwbusines.id, 'user_id': review.rvwowner.id
-    }for review in reviews])
+        }for review in reviews],
+        "total_results": all_reviews.total,
+            "total_pages": all_reviews.pages,
+            "page": all_reviews.page,
+            "per_page": all_reviews.per_page,
+        })
 
 
 @review.route('businesses/reviews/<reviewId>', methods=['PUT'])
@@ -68,9 +73,9 @@ def update_business_reviews(current_user, reviewId):
     the review ownner can update the reviewId"""
     review = Review.query.filter_by(id=reviewId).first()
     if not review:
-        return jsonify({"Error": "Review does not exist"})
+        return jsonify({"Error": "Review does not exist"}), 401
     if current_user.id != review.user_id:
-        return jsonify({"Error": "you can only Update your reviews"})
+        return jsonify({"Error": "you can only Update your reviews"}), 401
     data = request.get_json()
     validator = Validator(review_schema)
     validator.validate(data)

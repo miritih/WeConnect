@@ -46,6 +46,7 @@ class Business(TimestampMixin, db.Model):
     category = db.Column(db.String(255))
     description = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    logo = db.Column(db.String(128), default="download_qfbj36")
     reviews = db.relationship(
         'Review',
         backref='rvwbusines',

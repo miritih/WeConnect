@@ -42,7 +42,8 @@ class AddBusinessTestCase(unittest.TestCase):
             "name": "Andela",
             "location": "Nairobi,Kenya",
             "category": "Telecommunication",
-            "description": "The better option"
+            "description": "The better option",
+            "logo":"logo"
         }
         self.review = {
             "review": "Awesome Awesome Awesome ",
@@ -130,7 +131,8 @@ class AddBusinessTestCase(unittest.TestCase):
                 "name": "Andela Kenya",
                 "location": "Nairobi,Kenya",
                 "category": "Telecommunication",
-                "description": "The better option"
+                "description": "The better option",
+                "logo":"logo"
             }),
             headers={
                 "content-type": "application/json",
@@ -146,7 +148,7 @@ class AddBusinessTestCase(unittest.TestCase):
                 "access-token": self.token
             }
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 401)
         self.assertIn("No Reviews for this business", str(res.data))
 
     def test_business_not_exists(self):

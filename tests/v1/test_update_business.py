@@ -27,6 +27,7 @@ class CreateUserTestCase(unittest.TestCase):
             "name": "Andela",
             "location": "Nairobi,Kenya",
             "category": "Tech",
+            "logo":"logo",
             "bio": "Epic"
         }
         self.update_business = {

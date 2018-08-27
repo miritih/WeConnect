@@ -108,6 +108,11 @@ new_business = {
         'required': True,
         'empty': False
     },
+    "logo": {
+        'type': 'string',
+        'required': True,
+        'empty': True
+    },
     "category": {
         'type': 'string',
         'required': True,
@@ -129,6 +134,11 @@ business_update = {
         'type': 'string',
         'required': True,
         'empty': False
+    }, 
+    "logo": {
+        'type': 'string',
+        'required': True,
+        'empty': True
     },
     "category": {
         'type': 'string',

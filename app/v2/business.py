@@ -30,7 +30,9 @@ def register_business(current_user):
         location=data['location'],
         category=data['category'],
         description=data['description'],
+        logo=data['logo'],
         user_id=current_user.id
+        
     )
     db.session.add(new_biz)
     db.session.commit()
@@ -38,6 +40,7 @@ def register_business(current_user):
         "message": "Business created", "Business": {'update_at': new_biz.updated_at,
                                                     "category": new_biz.category, 'description': new_biz.description,
                                                     "name": new_biz.name, "location": new_biz.location,
+                                                    "logo":new_biz.logo,
                                                     'user_id': new_biz.bsowner.id, 'created_at': new_biz.created_at,
                                                     "id": new_biz.id}}), 201
 
@@ -48,7 +51,7 @@ def get_business(business_id):
     business = Business.query.filter_by(id=business_id).first()
     if business:
         return jsonify({'id': business.id, 'user_id': business.bsowner.id,
-                        'created_at': business.created_at, 'name': business.name,
+                        'created_at': business.created_at, 'name': business.name, "logo":business.logo,
                         'location': business.location, 'description': business.description,
                         'category': business.category, 'update_at': business.updated_at
                         })
@@ -67,7 +70,7 @@ def get_user_businesses(current_user):
     return jsonify({
         "Results": [{'category': business.category, 'created_at': business.created_at,
                      'name': business.name, 'location': business.location,
-                     'id': business.id, 'category': business.category,
+                     'id': business.id, 'category': business.category, "logo":business.logo,
                      'description': business.description, 'user_id': business.bsowner.id,
                      'update_at': business.updated_at
                      } for business in all],
@@ -95,7 +98,7 @@ def get_busineses():
         "total_results": results.total,
         "total_pages": results.pages,
         "per_page": results.per_page,
-        "objects": [{'id': business.id, 'name': business.name,
+        "objects": [{'id': business.id, 'name': business.name, "logo":business.logo,
                      'user_id': business.bsowner.id, 'created_at': business.created_at,
                      'location': business.location, 'category': business.category,
                      'description': business.description, 'update_at': business.updated_at
@@ -124,7 +127,7 @@ def search_busineses():
         "per_page": results.per_page,
         "businesses": [{'id': business.id, 'name': business.name,
                         'user_id': business.bsowner.id, 'created_at': business.created_at,
-                        'location': business.location, 'category': business.category,
+                        'location': business.location, 'category': business.category, "logo":business.logo,
                         'description': business.description, 'update_at': business.updated_at
                         } for business in all_paginated]})
 
@@ -150,12 +153,13 @@ def update_business(current_user, businessId):
         business.location = data['location']
         business.category = data['category']
         business.name = data['name']
+        business.logo = data['logo']
         business.description = data['description']
         db.session.commit()
         return jsonify({
             "message": "business updated!",
             "Details": {
-                "name": business.name, "location": business.location,
+                "name": business.name, "logo":business.logo, "location": business.location,
                 "category": business.category
             }}), 202
     return jsonify({"message": "Sorry! You can only update your business!!"}), 401
